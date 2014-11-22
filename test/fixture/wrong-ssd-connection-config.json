@@ -1,0 +1,6 @@
+{
+  "connection": "",
+  "ca": "./test/fixture/keys-docker/ca.txt",
+  "cert": "./test/fixture/keys-docker/cert.txt",
+  "key": "./test/fixture/keys-docker/key.txt"
+}
