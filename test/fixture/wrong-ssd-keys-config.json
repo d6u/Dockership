@@ -1,0 +1,6 @@
+{
+  "connection": "protocol://some.random.host:12345",
+  "ca": "./test/fixture/keys-docker/ca.txt",
+  "cert": "",
+  "key": ""
+}
