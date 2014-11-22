@@ -1,0 +1,29 @@
+{
+  "name": "ssd",
+  "version": "0.0.1",
+  "description": "Simple Server Deployment",
+  "main": "index.js",
+  "dependencies": {
+    "archiver": "^0.12.0",
+    "bluebird": "^2.3.11",
+    "chalk": "^0.5.1",
+    "dateformat": "^1.0.8",
+    "dockerode": "^2.0.4",
+    "semver": "^4.1.0"
+  },
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "mocha": "^2.0.1",
+    "proxyquire": "^1.1.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "docker",
+    "docker.io",
+    "deploy"
+  ],
+  "author": "Daiwei Lu <daiweilu123@gmail.com>",
+  "license": "MIT"
+}
