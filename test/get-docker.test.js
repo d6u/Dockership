@@ -4,17 +4,25 @@ var expect = require('chai').expect;
 var proxyquire = require('proxyquire').noPreserveCache().noCallThru();
 var sinon = require('sinon');
 
+var Promise = require('bluebird');
+
 describe('getDocker', function () {
 
   it('should successfully return Docker instance with correct config', function (done) {
     var rightConfig = require('./fixture/right-ssd-config.json');
-    rightConfig['@runtimeGlobal'] = true;
-
     var FakeDocker = sinon.spy();
+    var ca = new Buffer('ca\n');
+    var cert = new Buffer('cert\n');
+    var key = new Buffer('key\n');
 
     var getDocker = proxyquire('../lib/get-docker', {
       './ssd-config': rightConfig,
-      './docker-promisified': FakeDocker
+      './docker-promisified': FakeDocker,
+      './get-keys': function () {
+        return new Promise(function (resolve, reject) {
+          return resolve([ca, cert, key]);
+        });
+      }
     });
 
     getDocker().then(function (docker) {
@@ -24,9 +32,9 @@ describe('getDocker', function () {
         protocol: 'protocol',
         host: 'some.random.host',
         port: '12345',
-        ca: new Buffer('ca\n'),
-        cert: new Buffer('cert\n'),
-        key: new Buffer('key\n')
+        ca: ca,
+        cert: cert,
+        key: key
       });
 
       expect(FakeDocker.calledWithNew()).true;
@@ -39,10 +47,15 @@ describe('getDocker', function () {
 
   it('should fail to resolve with keys', function (done) {
     var wrongConfig = require('./fixture/wrong-ssd-connection-config.json');
-    wrongConfig['@runtimeGlobal'] = true;
 
     var getDocker = proxyquire('../lib/get-docker', {
-      './ssd-config': wrongConfig
+      './ssd-config': wrongConfig,
+      './docker-promisified': function () {},
+      './get-keys': function () {
+        return new Promise(function (resolve, reject) {
+          return resolve();
+        });
+      }
     });
 
     getDocker().then(function () {
