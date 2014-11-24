@@ -10,6 +10,9 @@ switch (argv['_'][0]) {
       log(containers);
     });
     break;
+  case 'build':
+    ssd.build();
+    break;
   default:
 
 }
