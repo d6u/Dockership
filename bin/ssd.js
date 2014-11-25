@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
-var argv = require('minimist')(process.argv.slice(2));
-var ssd = require('../index');
-var log = require('../lib/get-logger')('local');
+var argv      = require('minimist')(process.argv.slice(2));
+var ssd       = require('../index');
+var log       = require('../lib/get-logger')('local');
+var getMeta   = require('./get-meta');
+var parseMeta = require('./parse-meta');
 
 switch (argv['_'][0]) {
   case 'status':
@@ -14,7 +16,12 @@ switch (argv['_'][0]) {
     ssd.build();
     break;
   case 'run':
-    ssd.stop('baseimage', '0.9.16');
+    var meta = getMeta();
+    var opt  = parseMeta(meta);
+    ssd.stop(meta['image-tag'], meta['version'])
+      .then(function () {
+        return ssd.run(meta['image-tag'], meta['version'], opt);
+      });
     break;
   default:
 

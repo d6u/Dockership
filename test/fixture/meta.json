@@ -1,0 +1,5 @@
+{
+  "image-tag": "daiweilu/baseimage-nginx",
+  "version": "0.0.3",
+  "ports": ["10000:80"]
+}
