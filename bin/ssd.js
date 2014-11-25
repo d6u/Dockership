@@ -13,6 +13,9 @@ switch (argv['_'][0]) {
   case 'build':
     ssd.build();
     break;
+  case 'run':
+    ssd.stop('baseimage', '0.9.16');
+    break;
   default:
 
 }
