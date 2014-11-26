@@ -9,6 +9,12 @@ var getLogger     = require('../lib/get-logger');
 var parseMeta     = require('../lib/parse-meta');
 var PerLineStream = require('../lib/per-line-stream');
 var LogStream     = require('../lib/log-stream');
+var getDocker     = require('../lib/get-docker');
+
+var log   = getLogger('ssd');
+var error = getLogger('error');
+
+var $meta;
 
 switch (argv['_'][0]) {
   case 'status':
@@ -24,23 +30,70 @@ switch (argv['_'][0]) {
 }
 
 function up() {
-  var $meta;
-
   Promise.all([ getConfig('meta'), ssd.getImage() ])
     .spread(function (meta, images) {
       $meta = meta;
       if (images.length === 0 || semver.gt(meta.version, images[0].version)) {
         return ssd.build();
       } else {
-        throw new Error();
+        var err = new Error('server has greater or same version image than local');
+        err.code = 'VERSIONERROR';
+        err.image = images[0];
+        throw err;
       }
     })
     .then(function (response) {
       return new Promise(function (resolve, reject) {
-        response
+        var logging = response
           .pipe(new PerLineStream())
-          .pipe(new LogStream())
-          .on('finish', resolve);
+          .pipe(new LogStream());
+
+        logging
+          .on('finish', resolve)
+          .on('error', reject);
       });
+    })
+    .then(function () {
+      log('finish building image');
+    })
+    .catch(function (err) {
+      error(err.message);
+      switch(err.code) {
+        case 'BUILDERROR':
+          break;
+        case 'VERSIONERROR':
+          return startContainer(err.image);
+      }
+    })
+    .then(function (id) {
+      if (id) {
+        log(id);
+      }
+    });
+}
+
+function startContainer(image) {
+  return ssd.getContainer()
+    .then(function (containers) {
+      for (var i = 0; i < containers.length; i++) {
+        if (!semver.gt($meta.version, containers[i].version)) {
+          if (containers[i].Status.match(/^Up/)) {
+            log('server already running container with same or greater version');
+            return containers[i].Id;
+          } else if (containers[i].Status.match(/^Exited/)) {
+            log('server has an existed container with same or greater version');
+            log('start that container');
+            return getDocker()
+              .then(function (docker) {
+                return new Promise(function (resolve, reject) {
+                  docker.getContainer(containers[i].Id).start(function (err) {
+                    if (err) return reject(err);
+                    resolve(containers[i].Id);
+                  });
+                });
+              });
+          }
+        }
+      }
     });
 }
