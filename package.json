@@ -10,6 +10,7 @@
     "chalk": "^0.5.1",
     "dateformat": "^1.0.8",
     "dockerode": "^2.0.4",
+    "lodash": "^2.4.1",
     "minimist": "^1.1.0",
     "semver": "^4.1.0"
   },

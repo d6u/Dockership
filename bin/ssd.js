@@ -3,14 +3,16 @@
 var argv      = require('minimist')(process.argv.slice(2));
 var ssd       = require('../index');
 var log       = require('../lib/get-logger')('local');
-var getMeta   = require('./get-meta');
-var parseMeta = require('./parse-meta');
+var getMeta   = require('../lib/get-config');
+var parseMeta = require('../lib/parse-meta');
 
 switch (argv['_'][0]) {
   case 'status':
-    ssd.status().then(function (containers) {
-      log(containers);
-    });
+    ssd.getImage()
+      .then(function (images) {
+        log('Images:');
+        log(images);
+      });
     break;
   case 'build':
     ssd.build();

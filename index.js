@@ -1,6 +1,4 @@
 module.exports = {
-  status: require('./lib/status'),
-  build:  require('./lib/build'),
-  stop:   require('./lib/stop'),
-  run:    require('./lib/run')
+  getImage:     require('./lib/get-image'),
+  // getContainer: require('./lib/get-container')
 };
