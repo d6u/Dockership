@@ -1,14 +1,12 @@
 'use strict';
 
-var expect = require('chai').expect;
-// var proxyquire = require('proxyquire').noPreserveCache().noCallThru();
-// var sinon = require('sinon');
+var expect  = require('chai').expect;
 
 var Promise = require('bluebird');
-var path = require('path');
-var fs = require('../lib/fs-promisified');
+var path    = require('path');
+var fs      = require('../../lib/fs-promisified');
 
-var makeTar = require('../lib/make-tar');
+var makeTar = require('../../lib/make-tar');
 
 describe('makeTar', function () {
 
@@ -30,7 +28,7 @@ describe('makeTar', function () {
   });
 
   it('should create tarball if dest path is file', function (done) {
-    var src = path.resolve(__dirname, 'fixture', 'random-dir');
+    var src = path.resolve('test', 'fixture', 'random-dir');
 
     makeTar(src, dest1)
       .then(function (destPath) {
@@ -41,7 +39,7 @@ describe('makeTar', function () {
   });
 
   it('should create tarball if dest path if dir', function (done) {
-    var src = path.resolve(__dirname, 'fixture', 'random-dir');
+    var src = path.resolve('test', 'fixture', 'random-dir');
 
     makeTar(src, dest2)
       .then(function (destPath) {
