@@ -31,7 +31,7 @@ openssl rsa -in key.pem -out key.pem -passin pass:$2
 
 # Update Docker Config
 
-sudo sed -ri 's|(DOCKER_OPTS).+|\1="--tlsverify --tlscacert=/home/ubuntu/.docker/ca.pem --tlscert=/home/ubuntu/.docker/server-cert.pem --tlskey=/home/ubuntu/.docker/server-key.pem -H=0.0.0.0:2376 -H unix:///var/run/docker.sock"|' /etc/init/docker.conf
+sudo sed -ri 's|(DOCKER_OPTS).+|\1="--tlsverify --tlscacert='"$HOME"'/.docker/ca.pem --tlscert='"$HOME"'/.docker/server-cert.pem --tlskey='"$HOME"'/.docker/server-key.pem -H=0.0.0.0:2376 -H unix:///var/run/docker.sock"|' /etc/init/docker.conf
 
 # Reload Config
 
