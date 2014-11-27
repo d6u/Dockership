@@ -54,7 +54,8 @@ function up() {
       var _this = this;
       removeContainerExcept(this.containers, this.container);
       if (this.container === undefined) {
-        return docker.createContainerAsync(parseMeta(this.meta))
+        var startConfig = parseMeta(this.meta);
+        return docker.createContainerAsync(startConfig)
           .then(function (container) {
             return new Promise(function (resolve, reject) {
               container.start(function (err) {
