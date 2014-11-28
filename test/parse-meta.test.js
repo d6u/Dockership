@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 
 var parseMeta = require('../lib/parse-meta');
-var meta = require('./fixture/meta.json');
+var meta = require('./fixture/meta-1-0-0.json');
 
 describe('parseMeta', function () {
 
@@ -21,7 +21,7 @@ describe('parseMeta', function () {
   it('should parse correct meta', function () {
     expect(parseMeta(meta)).eql({
       'name': '2014-11-25T15_49_05.859Z',
-      'Image': 'daiweilu/baseimage-nginx:0.0.3',
+      'Image': 'someone/baseimage:1.0.0',
       'ExposedPorts': {
         '80/tcp': {}
       },
