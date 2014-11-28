@@ -1,13 +1,12 @@
 var expect     = require('chai').expect;
 var proxyquire = require('proxyquire').noPreserveCache().noCallThru();
-var sinon      = require('sinon');
 
 var Promise    = require('bluebird');
 
 var images0915 = require('./fixture/images-0-9-15.json');
 var meta100    = require('./fixture/meta-1-0-0.json');
 
-describe.only('getImages', function () {
+describe('getImages', function () {
 
   it('should resolve with only related images data ordered by version', function (done) {
 

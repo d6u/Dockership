@@ -55,7 +55,8 @@
     "Id": "e74fe19c755c4f64752786128e38cd4adc33a0e0b39fcf46e04cf8fceae8fe33",
     "ParentId": "c4856f07178bc5d3ac406a1ef7e36cf6ebf3ea6987c037dcb5ddfd26fef7aa5c",
     "RepoTags": [
-      "someone/baseimage:0.9.14"
+      "someone/baseimage:0.9.14",
+      "someone/baseimage:0.9.13"
     ],
     "Size": 0,
     "VirtualSize": 412653106
