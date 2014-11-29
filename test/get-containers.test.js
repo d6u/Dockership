@@ -17,13 +17,10 @@ describe('getContainers', function () {
             return Promise.resolve(containers0915);
           }
         });
-      },
-      './get-config': function () {
-        return Promise.resolve(meta100);
       }
     });
 
-    getContainers()
+    getContainers(meta100)
       .then(function (containers) {
 
         expect(containers.length).eql(2);
@@ -36,7 +33,6 @@ describe('getContainers', function () {
 
         expect(containers[0].tag).eql('someone/baseimage:0.9.15');
         expect(containers[1].tag).eql('someone/baseimage:0.9.15');
-
 
         done();
       })

@@ -17,13 +17,10 @@ describe('getImages', function () {
             return Promise.resolve(images0915);
           }
         });
-      },
-      './get-config': function () {
-        return Promise.resolve(meta100);
       }
     });
 
-    getImages()
+    getImages(meta100)
       .then(function (images) {
 
         expect(images.length).eql(3);
