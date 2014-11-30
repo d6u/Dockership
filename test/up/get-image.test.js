@@ -49,7 +49,7 @@ describe('getImage', function () {
       return Promise.resolve();
     });
 
-    var getImage = proxyquire('../lib/up/get-image', {
+    var getImage = proxyquire('../../lib/up/get-image', {
       '../get-images': spyGetImages,
       '../build': spyBuild,
       './handle-build-response': spyHandleBuildResponse
@@ -107,7 +107,7 @@ describe('getImage', function () {
       return Promise.resolve();
     });
 
-    var getImage = proxyquire('../lib/up/get-image', {
+    var getImage = proxyquire('../../lib/up/get-image', {
       '../get-images': spyGetImages,
       '../build': spyBuild,
       './handle-build-response': spyHandleBuildResponse
