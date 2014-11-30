@@ -1,5 +1,5 @@
 module.exports = {
-  getImage:     require('./lib/get-image'),
-  getContainer: require('./lib/get-container'),
-  build:        require('./lib/build')
+  getImages:     require('./lib/get-images'),
+  getContainers: require('./lib/get-containers'),
+  up:            require('./lib/up')
 };

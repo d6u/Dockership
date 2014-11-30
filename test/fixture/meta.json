@@ -1,5 +1,0 @@
-{
-  "repo": "daiweilu/baseimage-nginx",
-  "version": "0.0.3",
-  "ports": ["80:10000"]
-}
