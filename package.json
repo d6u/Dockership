@@ -16,12 +16,13 @@
   },
   "devDependencies": {
     "chai": "^1.10.0",
+    "istanbul": "^0.3.4",
     "mocha": "^2.0.1",
     "proxyquire": "^1.1.0",
     "sinon": "^1.12.1"
   },
   "scripts": {
-    "test": "mocha --recursive"
+    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R nyan --recursive"
   },
   "keywords": [
     "docker",
