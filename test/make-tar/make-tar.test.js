@@ -21,14 +21,14 @@ describe('makeTar', function () {
       fs.unlinkAsync(dest1)
         .catch(function () {}),
 
-      fs.unlinkAsync(path.resolve(dest2, 'random-dir.tar'))
+      fs.unlinkAsync(path.resolve(dest2, 'make-tar-random-dir.tar'))
         .catch(function () {})
     )
     .finally(done);
   });
 
   it('should create tarball if dest path is file', function (done) {
-    var src = path.resolve('test', 'fixture', 'random-dir');
+    var src = path.resolve('test', 'fixture', 'make-tar-random-dir', 'random-file.txt');
 
     makeTar(src, dest1)
       .then(function (destPath) {
@@ -39,11 +39,11 @@ describe('makeTar', function () {
   });
 
   it('should create tarball if dest path if dir', function (done) {
-    var src = path.resolve('test', 'fixture', 'random-dir');
+    var src = path.resolve('test', 'fixture', 'make-tar-random-dir');
 
     makeTar(src, dest2)
       .then(function (destPath) {
-        expect(destPath).eql(path.resolve(dest2, 'random-dir.tar'));
+        expect(destPath).eql(path.resolve(dest2, 'make-tar-random-dir.tar'));
         done();
       })
       .catch(done);
