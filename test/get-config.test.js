@@ -5,8 +5,6 @@ var sinon      = require('sinon');
 var Promise = require('bluebird');
 var path    = require('path');
 
-// var getConfig = require('../lib/get-config');
-
 describe('getConfig', function () {
 
   it('should call getJson with correct path', function () {
@@ -21,9 +19,13 @@ describe('getConfig', function () {
 
     getConfig('meta');
     getConfig('ssd');
+    getConfig('meta', 'production');
+    getConfig('ssd', 'production');
 
     expect(spy.args[0][0]).eql(path.resolve('source/meta.json'));
     expect(spy.args[1][0]).eql(path.resolve('stage/development/ssd.json'));
+    expect(spy.args[2][0]).eql(path.resolve('source/meta.json'));
+    expect(spy.args[3][0]).eql(path.resolve('stage/production/ssd.json'));
   });
 
   it('should reject with error if provide unrecognized config name', function (done) {
