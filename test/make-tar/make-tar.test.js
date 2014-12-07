@@ -28,9 +28,13 @@ describe('makeTar', function () {
   });
 
   it('should create tarball if dest path is file', function (done) {
-    var src = path.resolve('test', 'fixture', 'make-tar-random-dir', 'random-file.txt');
+    var src = path.resolve('test', 'fixture', 'make-tar-random-dir');
 
-    makeTar(src, dest1)
+    makeTar(src, dest1) // dest1 does not exist yet
+      .then(function (destPath) {
+        expect(destPath).eql(dest1);
+        return makeTar(src, dest1); // repeat with dest1 as an existing file
+      })
       .then(function (destPath) {
         expect(destPath).eql(dest1);
         done();
@@ -38,7 +42,7 @@ describe('makeTar', function () {
       .catch(done);
   });
 
-  it('should create tarball if dest path if dir', function (done) {
+  it('should create tarball if dest path is dir', function (done) {
     var src = path.resolve('test', 'fixture', 'make-tar-random-dir');
 
     makeTar(src, dest2)
