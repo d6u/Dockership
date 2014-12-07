@@ -14,7 +14,8 @@
     "Id": "83bc4d21347b2cad69cde2544717d65c249553ffacd7294a69563971d7a672f1",
     "ParentId": "0ec2263b38de4a3f932a9cd20f62ac5f5a9d3f01fcebea120d87df4edca90508",
     "RepoTags": [
-      "someone/baseimage:0.9.8"
+      "someone/baseimage:0.9.8",
+      "someone/baseimage:0.9.9"
     ],
     "Size": 0,
     "VirtualSize": 352331672
