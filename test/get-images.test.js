@@ -24,7 +24,7 @@ describe('getImages', function () {
       }
     });
 
-    getImages('development')
+    getImages()
       .then(function (images) {
 
         expect(images.length).eql(3);
