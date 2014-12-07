@@ -1,5 +1,3 @@
-'use strict';
-
 var expect     = require('chai').expect;
 var proxyquire = require('proxyquire').noPreserveCache().noCallThru();
 var sinon      = require('sinon');
@@ -11,8 +9,9 @@ var wrongConfig = require('../fixture/wrong-ssd-connection-config.json');
 
 describe('getDocker', function () {
 
-  it('should successfully return Docker instance with correct config', function (done) {
+  it('should successfully return Docker instance with correct config and cache docker instance', function (done) {
     var FakeDocker = sinon.spy();
+
     var ca   = new Buffer('ca\n');
     var cert = new Buffer('cert\n');
     var key  = new Buffer('key\n');
@@ -42,7 +41,11 @@ describe('getDocker', function () {
         key: key
       });
 
-      done();
+      getDocker().then(function (docker2) {
+        expect(docker2).eql(docker);
+        done();
+      })
+      .catch(done);
     })
     .catch(done);
   });
