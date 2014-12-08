@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Simple Server Deployment",
   "main": "index.js",
+  "bin" : {
+    "ssd" : "./bin/ssd.js"
+  },
   "dependencies": {
     "archiver": "^0.12.0",
     "async": "^0.9.0",
