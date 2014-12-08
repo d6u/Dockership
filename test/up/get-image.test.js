@@ -2,9 +2,12 @@ var expect     = require('chai').expect;
 var proxyquire = require('proxyquire').noPreserveCache().noCallThru();
 var sinon      = require('sinon');
 
-var Promise = require('bluebird');
+var Promise      = require('bluebird');
+var EventEmitter = require('events').EventEmitter;
 
-var imagesMock = require('../fixture/get-image-images.json');
+var imagesMock  = require('../fixture/get-image-images.json');
+var meta_0_9_15 = require('../fixture/meta-0-9-15.json');
+var meta_1_0_0  = require('../fixture/meta-1-0-0.json');
 
 describe('getImage', function () {
 
@@ -17,8 +20,12 @@ describe('getImage', function () {
       return Promise.resolve();
     });
 
-    var spyHandleBuildResponse = sinon.spy(function () {
+    var spyHandler = sinon.spy(function () {
       return Promise.resolve();
+    });
+
+    var spyHandleBuildResponse = sinon.spy(function () {
+      return spyHandler;
     });
 
     var getImage = proxyquire('../../lib/up/get-image', {
@@ -27,21 +34,15 @@ describe('getImage', function () {
       './handle-build-response': spyHandleBuildResponse
     });
 
-    Promise.bind({
-      meta: {
-        "repo": "someone/baseimage",
-        "version": "0.9.15",
-        "ports": ["80:10000"]
-      }
-    })
+    Promise.bind({meta: meta_0_9_15})
       .then(getImage())
       .then(function () {
-
-        expect(this.image).eql(images[0]);
+        expect(this.image).eql(imagesMock[0]);
 
         expect(spyGetImages.callCount).eql(1);
         expect(spyBuild.callCount).eql(0);
-        expect(spyHandleBuildResponse.callCount).eql(0);
+        expect(spyHandleBuildResponse.callCount).eql(1);
+        expect(spyHandler.callCount).eql(0);
 
         done();
       })
@@ -49,25 +50,19 @@ describe('getImage', function () {
   });
 
   it('should resolve build local image and resolve with data about that image', function (done) {
-    var meta = {
-      "repo": "someone/baseimage",
-      "version": "1.0.0",
-      "ports": ["80:10000"]
-    };
-
     var i = 0;
 
     var spyGetImages = sinon.spy(function () {
       if (i === 0) {
         i += 1;
-        return Promise.resolve(images);
+        return Promise.resolve(imagesMock);
       } else {
         return Promise.resolve([{
           "Id": "280ee4e3cb99b3ae43e711ffda699c83fba7f6c94776ddbb0a6b02bde2bfb085",
           "repo": "someone/baseimage",
           "version": "1.0.0",
           "ports": ["80:10000"]
-        }].concat(images));
+        }].concat(imagesMock));
       }
     });
 
@@ -75,8 +70,12 @@ describe('getImage', function () {
       return Promise.resolve();
     });
 
-    var spyHandleBuildResponse = sinon.spy(function () {
+    var spyHandler = sinon.spy(function () {
       return Promise.resolve();
+    });
+
+    var spyHandleBuildResponse = sinon.spy(function () {
+      return spyHandler;
     });
 
     var getImage = proxyquire('../../lib/up/get-image', {
@@ -85,10 +84,9 @@ describe('getImage', function () {
       './handle-build-response': spyHandleBuildResponse
     });
 
-    Promise.bind({meta: meta})
-      .then(getImage)
+    Promise.bind({meta: meta_1_0_0})
+      .then(getImage())
       .then(function () {
-
         expect(this.image).eql({
           "Id": "280ee4e3cb99b3ae43e711ffda699c83fba7f6c94776ddbb0a6b02bde2bfb085",
           "repo": "someone/baseimage",
@@ -99,6 +97,7 @@ describe('getImage', function () {
         expect(spyGetImages.callCount).eql(2);
         expect(spyBuild.callCount).eql(1);
         expect(spyHandleBuildResponse.callCount).eql(1);
+        expect(spyHandler.callCount).eql(1);
 
         done();
       })
