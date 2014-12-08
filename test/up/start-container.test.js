@@ -59,7 +59,7 @@ describe('startContainer', function () {
         getContainer: spyGetContainer
       }
     })
-      .then(startContainer)
+      .then(startContainer())
       .then(function () {
         expect(spyGetContainer.callCount).eql(1);
         expect(spyGetContainer.args[0][0]).eql('abc');
@@ -107,7 +107,7 @@ describe('startContainer', function () {
         createContainerAsync: spyCreateContainerAsync
       }
     })
-      .then(startContainer)
+      .then(startContainer())
       .then(function () {
         expect(spyGetContainer.callCount).eql(0);
         expect(spyCreateContainerAsync.callCount).eql(1);

@@ -12,7 +12,9 @@ describe('up', function () {
       '../get-docker': noop,
       './get-image': noop,
       './get-container': function () {
-        this.container = {Id: 'abc'};
+        return function () {
+          this.container = {Id: 'abc'};
+        };
       },
       './cleanup-containers': noop,
       './start-container': noop
@@ -27,7 +29,7 @@ describe('up', function () {
         expect(infoArr.length).eql(0);
         done();
       });
-    });
+    }).catch(done);
   });
 
   it('should emit error and end', function (done) {
@@ -42,7 +44,9 @@ describe('up', function () {
       './get-container': noop,
       './cleanup-containers': noop,
       './start-container': function () {
-        throw e;
+        return function () {
+          throw e;
+        };
       }
     });
 
@@ -56,6 +60,6 @@ describe('up', function () {
         expect(i).eql(1);
         done();
       });
-    });
+    }).catch(done);
   });
 });

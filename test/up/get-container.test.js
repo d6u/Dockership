@@ -43,7 +43,7 @@ describe('getContainer', function () {
         "version": "0.9.15"
       }
     })
-      .then(getContainer)
+      .then(getContainer())
       .then(function () {
 
         expect(this.container).eql({
@@ -103,7 +103,7 @@ describe('getContainer', function () {
         "version": "1.0.0"
       }
     })
-      .then(getContainer)
+      .then(getContainer())
       .then(function () {
         expect(this.container).eql(undefined);
         done();

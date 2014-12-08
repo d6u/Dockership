@@ -4,23 +4,31 @@ var argv      = require('minimist')(process.argv.slice(2));
 var ssd       = require('../index');
 var getLogger = require('../lib/util/get-logger');
 
-var log   = getLogger('ssd');
+var info  = getLogger('info');
 var error = getLogger('error');
 
-if (argv['s'] === undefined) {
-  argv['s'] = 'development';
-}
+argv['s'] = argv['s'] || 'development';
 
 switch (argv['_'][0]) {
   case 'status':
-    ssd.status(argv['s'])
-      .then(function (status) {
-        getLogger('Images')(JSON.stringify(status.images, null, 2));
-        getLogger('Containers')(JSON.stringify(status.containers, null, 2));
-      });
+    ssd.status(argv['s']).then(function (status) {
+      getLogger('Images')(JSON.stringify(status.images, null, 2));
+      getLogger('Containers')(JSON.stringify(status.containers, null, 2));
+    });
     break;
   case 'up':
-    ssd.up(argv['s']);
+    ssd.up(argv['s']).then(function (emitter) {
+      emitter.on('info', info);
+
+      emitter.on('error', function (err) {
+        error(err.stack);
+        throw err;
+      });
+
+      emitter.on('end', function () {
+        process.exit(0);
+      });
+    });
     break;
   default:
 }
