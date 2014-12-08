@@ -33,12 +33,13 @@ describe('handleBuildResponse', function () {
         emitter.on('info', function (str) {
           expect(j).lte(i);
           j += 1;
-          if (str === 'Removing intermediate container 99f74fe4491b') {
-            done();
-          }
         });
 
-        handler(readable);
+        handler(readable)
+          .then(function () {
+            done();
+          })
+          .catch(done);
       });
   });
 
@@ -68,10 +69,18 @@ describe('handleBuildResponse', function () {
         emitter.on('error', function (err) {
           expect(err.code).eql('BUILDERROR');
           expect(err.message).eql('runit-app.sh: no such file or directory');
-          done();
         });
 
-        handler(readable);
+        handler(readable)
+          .then(function () {
+            done(new Error('should not execute'));
+          })
+          .catch(function (err) {
+            expect(err.code).eql('BUILDERROR');
+            expect(err.message).eql('runit-app.sh: no such file or directory');
+            done();
+          })
+          .catch(done);
       });
   });
 });
