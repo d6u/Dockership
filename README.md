@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/daiweilu/ssd.svg?branch=master)](https://travis-ci.org/daiweilu/ssd)
+
 # Simple Server Deployment (Single Server of Dockers)
 
 __SSD__ wants to automate the process of deploying simple hobby and test web apps, make it easier so you can focus on the fun part.
