@@ -85,16 +85,16 @@ ssd.status('<stage name>').then(function (status) {
   // status.containers
 });
 
-ssd.up('<stage name>').then(function (logStream) {
-  logStream.on('info', function (msg) {
+ssd.up('<stage name>').then(function (eventEmitter) {
+  eventEmitter.on('info', function (msg) {
     console.info(msg);
   });
 
-  logStream.on('error', function (err) {
+  eventEmitter.on('error', function (err) {
     throw err;
   });
 
-  logStream.on('end', function () {
+  eventEmitter.on('end', function () {
     process.exit(0);
   });
 });

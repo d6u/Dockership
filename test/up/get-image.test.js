@@ -4,41 +4,13 @@ var sinon      = require('sinon');
 
 var Promise = require('bluebird');
 
-describe('getImage', function () {
+var imagesMock = require('../fixture/get-image-images.json');
 
-  var images = [
-    {
-      "Created": 1412332797,
-      "Id": "cf39b476aeec4d2bd097945a14a147dc52e16bd88511ed931357a5cd6f6590de",
-      "ParentId": "64463062ff222a46710cad76581befc2502cf9bf43663d398ab279ce5203778c",
-      "RepoTags": [
-        "someone/baseimage:0.9.15",
-        "someone/baseimage:latest"
-      ],
-      "Size": 0,
-      "VirtualSize": 288990123,
-      "repo": "someone/baseimage",
-      "tag": "someone/baseimage:0.9.15",
-      "version": "0.9.15"
-    },
-    {
-      "Created": 1393411590,
-      "Id": "83bc4d21347b2cad69cde2544717d65c249553ffacd7294a69563971d7a672f1",
-      "ParentId": "0ec2263b38de4a3f932a9cd20f62ac5f5a9d3f01fcebea120d87df4edca90508",
-      "RepoTags": [
-        "someone/baseimage:0.9.8"
-      ],
-      "Size": 0,
-      "VirtualSize": 352331672,
-      "repo": "someone/baseimage",
-      "tag": "someone/baseimage:0.9.8",
-      "version": "0.9.8"
-    }
-  ];
+describe('getImage', function () {
 
   it('should resolve with newest image from server if server is newer than local', function (done) {
     var spyGetImages = sinon.spy(function () {
-      return Promise.resolve(images);
+      return Promise.resolve(imagesMock);
     });
 
     var spyBuild = sinon.spy(function () {
@@ -50,8 +22,8 @@ describe('getImage', function () {
     });
 
     var getImage = proxyquire('../../lib/up/get-image', {
-      '../get-images': spyGetImages,
-      '../build': spyBuild,
+      '../get-images':           spyGetImages,
+      '../build':                spyBuild,
       './handle-build-response': spyHandleBuildResponse
     });
 
@@ -62,7 +34,7 @@ describe('getImage', function () {
         "ports": ["80:10000"]
       }
     })
-      .then(getImage)
+      .then(getImage())
       .then(function () {
 
         expect(this.image).eql(images[0]);
