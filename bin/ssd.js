@@ -7,6 +7,10 @@ var getLogger = require('../lib/util/get-logger');
 var log   = getLogger('ssd');
 var error = getLogger('error');
 
+if (argv['s'] === undefined) {
+  argv['s'] = 'development';
+}
+
 switch (argv['_'][0]) {
   case 'status':
     ssd.status(argv['s'])

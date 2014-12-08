@@ -17,8 +17,8 @@ describe('getConfig', function () {
       './get-json': spy
     });
 
-    getConfig('meta');
-    getConfig('ssd');
+    getConfig('meta', 'development');
+    getConfig('ssd', 'development');
     getConfig('meta', 'production');
     getConfig('ssd', 'production');
 
@@ -37,9 +37,9 @@ describe('getConfig', function () {
       './get-json': getJson
     });
 
-    getConfig('xxx')
+    getConfig('xxx', 'yyy')
       .catch(function (err) {
-        expect(err.message).eql('cannot recognize "xxx" as config in "undefined" stage');
+        expect(err.message).eql('cannot recognize "xxx" as config in "yyy" stage');
         expect(spy.callCount).eql(0);
         done();
       })
