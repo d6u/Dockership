@@ -20,7 +20,7 @@ switch (argv['_'][0]) {
       });
     break;
   case 'up':
-    ssd.up();
+    ssd.up(argv['s']);
     break;
   default:
 }
