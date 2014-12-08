@@ -12,7 +12,7 @@ describe('makeTar', function () {
   describe('isFileAsync', function () {
 
     it('should resolve with true if path is a file', function (done) {
-      var target = path.join(__dirname, '../fixture/random-dir/random-file.txt');
+      var target = path.join(__dirname, '../fixture/make-tar-random-dir/random-file.txt');
       isFileAsync(target)
       .then(function (isFile) {
         expect(isFile).true;
@@ -22,7 +22,7 @@ describe('makeTar', function () {
     });
 
     it('should resolve with false if path is a dir', function (done) {
-      var target = path.join(__dirname, '../fixture/random-dir');
+      var target = path.join(__dirname, '../fixture/make-tar-random-dir');
       isFileAsync(target)
       .then(function (isFile) {
         expect(isFile).false;
@@ -32,7 +32,7 @@ describe('makeTar', function () {
     });
 
     it('should throw error is dir is not a file or dir', function (done) {
-      var target = path.join(__dirname, '../fixture/random-dir/random-link');
+      var target = path.join(__dirname, '../fixture/make-tar-random-dir/random-link');
       isFileAsync(target)
       .then(function () {
         done(new Error('did not throw error'));

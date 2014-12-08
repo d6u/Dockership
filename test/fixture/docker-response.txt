@@ -1,0 +1,165 @@
+{"stream":"Step 0 : FROM phusion/baseimage:0.9.15\n"}
+<CHUNK-END>{"stream":" ---\u003e cf39b476aeec\n"}
+<CHUNK-END>{"stream":"Step 1 : ENV HOME /root\n"}
+<CHUNK-END>{"stream":" ---\u003e Running in 57584e2b8d2f\n"}
+<CHUNK-END>{"stream":" ---\u003e 9041455faae3\n"}
+<CHUNK-END>{"stream":"Removing intermediate container 57584e2b8d2f\n"}
+<CHUNK-END>{"stream":"Step 2 : RUN /etc/my_init.d/00_regen_ssh_host_keys.sh\n"}
+<CHUNK-END>{"stream":" ---\u003e Running in 3a1f7fffb11c\n"}
+<CHUNK-END>{"stream":"No SSH host key available. Generating one...\n"}
+<CHUNK-END>{"stream":"\u001b[91mCreating SSH2 RSA key; this may take some time ...\u001b[0m"}
+<CHUNK-END>{"stream":"\u001b[91m\n\u001b[0m"}
+<CHUNK-END>{"stream":"\u001b[91mCreating SSH2 DSA key; this may take some time ...\u001b[0m"}
+<CHUNK-END>{"stream":"\u001b[91m\n\u001b[0m"}
+<CHUNK-END>{"stream":"\u001b[91mCreating SSH2 ECDSA key; this may take some time ...\u001b[0m"}
+<CHUNK-END>{"stream":"\u001b[91m\n\u001b[0m"}
+<CHUNK-END>{"stream":"\u001b[91mCreating SSH2 ED25519 key; this may take some time ...\u001b[0m"}
+<CHUNK-END>{"stream":"\u001b[91m\n\u001b[0m"}
+<CHUNK-END>{"stream":"\u001b[91minvoke-rc.d: policy-rc.d denied execution of restart.\n\u001b[0m"}
+<CHUNK-END>{"stream":" ---\u003e 810f7959aabb\n"}
+<CHUNK-END>{"stream":"Removing intermediate container 3a1f7fffb11c\n"}
+<CHUNK-END>{"stream":"Step 3 : CMD /sbin/my_init\n"}
+<CHUNK-END>{"stream":" ---\u003e Running in fc96a9b45b87\n"}
+<CHUNK-END>{"stream":" ---\u003e 74dedcc1a2f2\n"}
+<CHUNK-END>{"stream":"Removing intermediate container fc96a9b45b87\n"}
+<CHUNK-END>{"stream":"Step 4 : ENV DEBIAN_FRONTEND noninteractive\n"}
+<CHUNK-END>{"stream":" ---\u003e Running in c4bfb3b7470f\n"}
+<CHUNK-END>{"stream":" ---\u003e e8b8e116e14f\n"}
+<CHUNK-END>{"stream":"Removing intermediate container c4bfb3b7470f\n"}
+<CHUNK-END>{"stream":"Step 5 : RUN curl -sL https://deb.nodesource.com/setup | sudo bash -\n"}
+<CHUNK-END>{"stream":" ---\u003e Running in 669c42490795\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"## Populating apt-get cache...\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"+ apt-get update\n"}
+<CHUNK-END>{"stream":"Ign http://archive.ubuntu.com trusty InRelease\n"}
+<CHUNK-END>{"stream":"Ign http://archive.ubuntu.com trusty-updates InRelease\n"}
+<CHUNK-END>{"stream":"Ign http://archive.ubuntu.com trusty-security InRelease\n"}
+<CHUNK-END>{"stream":"Ign http://archive.ubuntu.com trusty-proposed InRelease\n"}
+<CHUNK-END>{"stream":"Get:1 http://archive.ubuntu.com trusty Release.gpg [933 B]\n"}
+<CHUNK-END>{"stream":"Get:2 http://archive.ubuntu.com trusty-updates Release.gpg [933 B]\n"}
+<CHUNK-END>{"stream":"Get:3 http://archive.ubuntu.com trusty-security Release.gpg [933 B]\n"}
+<CHUNK-END>{"stream":"Get:4 http://archive.ubuntu.com trusty-proposed Release.gpg [933 B]\n"}
+<CHUNK-END>{"stream":"Get:5 http://archive.ubuntu.com trusty Release [58.5 kB]\n"}
+<CHUNK-END>{"stream":"Get:6 http://archive.ubuntu.com trusty-updates Release [62.0 kB]\n"}
+<CHUNK-END>{"stream":"Get:7 http://archive.ubuntu.com trusty-security Release [62.0 kB]\n"}
+<CHUNK-END>{"stream":"Get:8 http://archive.ubuntu.com trusty-proposed Release [209 kB]\n"}
+<CHUNK-END>{"stream":"Get:9 http://archive.ubuntu.com trusty/main Sources [1335 kB]\n"}
+<CHUNK-END>{"stream":"Get:10 http://archive.ubuntu.com trusty/restricted Sources [5335 B]\n"}
+<CHUNK-END>{"stream":"Get:11 http://archive.ubuntu.com trusty/universe Sources [7926 kB]\n"}
+<CHUNK-END>{"stream":"Get:12 http://archive.ubuntu.com trusty/main amd64 Packages [1743 kB]\n"}
+<CHUNK-END>{"stream":"Get:13 http://archive.ubuntu.com trusty/restricted amd64 Packages [16.0 kB]\n"}
+<CHUNK-END>{"stream":"Get:14 http://archive.ubuntu.com trusty/universe amd64 Packages [7589 kB]\n"}
+<CHUNK-END>{"stream":"Get:15 http://archive.ubuntu.com trusty-updates/main Sources [177 kB]\n"}
+<CHUNK-END>{"stream":"Get:16 http://archive.ubuntu.com trusty-updates/restricted Sources [1250 B]\n"}
+<CHUNK-END>{"stream":"Get:17 http://archive.ubuntu.com trusty-updates/universe Sources [113 kB]\n"}
+<CHUNK-END>{"stream":"Get:18 http://archive.ubuntu.com trusty-updates/main amd64 Packages [458 kB]\n"}
+<CHUNK-END>{"stream":"Get:19 http://archive.ubuntu.com trusty-updates/restricted amd64 Packages [6341 B]\n"}
+<CHUNK-END>{"stream":"Get:20 http://archive.ubuntu.com trusty-updates/universe amd64 Packages [286 kB]\n"}
+<CHUNK-END>{"stream":"Get:21 http://archive.ubuntu.com trusty-security/main Sources [60.7 kB]\n"}
+<CHUNK-END>{"stream":"Get:22 http://archive.ubuntu.com trusty-security/restricted Sources [40 B]\n"}
+<CHUNK-END>{"stream":"Get:23 http://archive.ubuntu.com trusty-security/universe Sources [15.1 kB]\n"}
+<CHUNK-END>{"stream":"Get:24 http://archive.ubuntu.com trusty-security/multiverse Sources [642 B]\n"}
+<CHUNK-END>{"stream":"Get:25 http://archive.ubuntu.com trusty-security/main amd64 Packages [197 kB]\n"}
+<CHUNK-END>{"stream":"Get:26 http://archive.ubuntu.com trusty-security/restricted amd64 Packages [40 B]\n"}
+<CHUNK-END>{"stream":"Get:27 http://archive.ubuntu.com trusty-security/universe amd64 Packages [79.2 kB]\n"}
+<CHUNK-END>{"stream":"Get:28 http://archive.ubuntu.com trusty-security/multiverse amd64 Packages [1089 B]\n"}
+<CHUNK-END>{"stream":"Get:29 http://archive.ubuntu.com trusty-proposed/main amd64 Packages [193 kB]\n"}
+<CHUNK-END>{"stream":"Get:30 http://archive.ubuntu.com trusty-proposed/restricted amd64 Packages [40 B]\n"}
+<CHUNK-END>{"stream":"Fetched 20.6 MB in 2s (6982 kB/s)\nReading package lists..."}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"## Confirming \"trusty\" is supported...\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"+ curl -sLf -o /dev/null 'https://deb.nodesource.com/node/dists/trusty/Release'\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"## Adding the NodeSource signing key to your keyring...\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"+ curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -\n"}
+<CHUNK-END>{"stream":"OK\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"## Creating apt sources list file for the NodeSource repo...\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"+ echo 'deb https://deb.nodesource.com/node trusty main' \u003e /etc/apt/sources.list.d/nodesource.list\n"}
+<CHUNK-END>{"stream":"+ echo 'deb-src https://deb.nodesource.com/node trusty main' \u003e\u003e /etc/apt/sources.list.d/nodesource.list\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"## Running `apt-get update` for you...\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"+ apt-get update\n"}
+<CHUNK-END>{"stream":"Ign http://archive.ubuntu.com trusty InRelease\n"}
+<CHUNK-END>{"stream":"Ign http://archive.ubuntu.com trusty-updates InRelease\n"}
+<CHUNK-END>{"stream":"Ign http://archive.ubuntu.com trusty-security InRelease\n"}
+<CHUNK-END>{"stream":"Ign http://archive.ubuntu.com trusty-proposed InRelease\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty Release.gpg\n"}
+<CHUNK-END>{"stream":"Get:1 https://deb.nodesource.com trusty InRelease\n"}
+<CHUNK-END>{"stream":"Get:2 http://archive.ubuntu.com trusty-updates Release.gpg [933 B]\n"}
+<CHUNK-END>{"stream":"Get:3 http://archive.ubuntu.com trusty-security Release.gpg [933 B]\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty-proposed Release.gpg\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty Release\n"}
+<CHUNK-END>{"stream":"Get:4 https://deb.nodesource.com trusty/main Sources\n"}
+<CHUNK-END>{"stream":"Get:5 http://archive.ubuntu.com trusty-updates Release [62.0 kB]\n"}
+<CHUNK-END>{"stream":"Get:6 https://deb.nodesource.com trusty/main amd64 Packages\n"}
+<CHUNK-END>{"stream":"Get:7 http://archive.ubuntu.com trusty-security Release [62.0 kB]\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty-proposed Release\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty/main Sources\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty/restricted Sources\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty/universe Sources\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty/main amd64 Packages\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty/restricted amd64 Packages\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty/universe amd64 Packages\n"}
+<CHUNK-END>{"stream":"Get:8 http://archive.ubuntu.com trusty-updates/main Sources [177 kB]\n"}
+<CHUNK-END>{"stream":"Get:9 http://archive.ubuntu.com trusty-updates/restricted Sources [1250 B]\n"}
+<CHUNK-END>{"stream":"Get:10 http://archive.ubuntu.com trusty-updates/universe Sources [113 kB]\n"}
+<CHUNK-END>{"stream":"Get:11 http://archive.ubuntu.com trusty-updates/main amd64 Packages [458 kB]\n"}
+<CHUNK-END>{"stream":"Get:12 http://archive.ubuntu.com trusty-updates/restricted amd64 Packages [6341 B]\n"}
+<CHUNK-END>{"stream":"Get:13 http://archive.ubuntu.com trusty-updates/universe amd64 Packages [286 kB]\n"}
+<CHUNK-END>{"stream":"Get:14 http://archive.ubuntu.com trusty-security/main Sources [60.7 kB]\n"}
+<CHUNK-END>{"stream":"Get:15 http://archive.ubuntu.com trusty-security/restricted Sources [40 B]\n"}
+<CHUNK-END>{"stream":"Get:16 http://archive.ubuntu.com trusty-security/universe Sources [15.1 kB]\n"}
+<CHUNK-END>{"stream":"Get:17 http://archive.ubuntu.com trusty-security/multiverse Sources [642 B]\n"}
+<CHUNK-END>{"stream":"Get:18 http://archive.ubuntu.com trusty-security/main amd64 Packages [197 kB]\n"}
+<CHUNK-END>{"stream":"Get:19 http://archive.ubuntu.com trusty-security/restricted amd64 Packages [40 B]\n"}
+<CHUNK-END>{"stream":"Get:20 http://archive.ubuntu.com trusty-security/universe amd64 Packages [79.2 kB]\n"}
+<CHUNK-END>{"stream":"Get:21 http://archive.ubuntu.com trusty-security/multiverse amd64 Packages [1089 B]\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty-proposed/main amd64 Packages\n"}
+<CHUNK-END>{"stream":"Hit http://archive.ubuntu.com trusty-proposed/restricted amd64 Packages\n"}
+<CHUNK-END>{"stream":"Fetched 1527 kB in 4s (334 kB/s)\nReading package lists..."}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"## Run `apt-get install nodejs` (as root) to install Node.js and npm\n"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":" ---\u003e eb9dfe0a5c4b\n"}
+<CHUNK-END>{"stream":"Removing intermediate container 669c42490795\n"}
+<CHUNK-END>{"stream":"Step 6 : RUN apt-get install -y nodejs\n"}
+<CHUNK-END>{"stream":" ---\u003e Running in f30261f9d0fd\n"}
+<CHUNK-END>{"stream":"Reading package lists..."}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"Building dependency tree..."}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"Reading state information..."}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"The following extra packages will be installed:\n"}
+<CHUNK-END>{"stream":"  rlwrap\n"}
+<CHUNK-END>{"stream":"The following NEW packages will be installed:\n"}
+<CHUNK-END>{"stream":"  nodejs rlwrap\n"}
+<CHUNK-END>{"stream":"0 upgraded, 2 newly installed, 0 to remove and 24 not upgraded.\nNeed to get 4227 kB of archives.\nAfter this operation, 20.0 MB of additional disk space will be used.\nGet:1 http://archive.ubuntu.com/ubuntu/ trusty/universe rlwrap amd64 0.37-5 [73.4 kB]\n"}
+<CHUNK-END>{"stream":"Get:2 https://deb.nodesource.com/node/ trusty/main nodejs amd64 0.10.33-2nodesource1~trusty1 [4154 kB]\n"}
+<CHUNK-END>{"stream":"Fetched 4227 kB in 1s (3286 kB/s)\n"}
+<CHUNK-END>{"stream":"Selecting previously unselected package rlwrap.\n"}
+<CHUNK-END>{"stream":"(Reading database ... 15989 files and directories currently installed.)\n"}
+<CHUNK-END>{"stream":"Preparing to unpack .../rlwrap_0.37-5_amd64.deb ...\n"}
+<CHUNK-END>{"stream":"Unpacking rlwrap (0.37-5) ...\n"}
+<CHUNK-END>{"stream":"Selecting previously unselected package nodejs.\n"}
+<CHUNK-END>{"stream":"Preparing to unpack .../nodejs_0.10.33-2nodesource1~trusty1_amd64.deb ...\n"}
+<CHUNK-END>{"stream":"Unpacking nodejs (0.10.33-2nodesource1~trusty1) ...\n"}
+<CHUNK-END>{"stream":"Setting up rlwrap (0.37-5) ...\n"}
+<CHUNK-END>{"stream":"update-alternatives: "}
+<CHUNK-END>{"stream":"using /usr/bin/rlwrap to provide /usr/bin/readline-editor (readline-editor) in auto mode"}
+<CHUNK-END>{"stream":"\n"}
+<CHUNK-END>{"stream":"Setting up nodejs (0.10.33-2nodesource1~trusty1) ...\n"}
+<CHUNK-END>{"stream":" ---\u003e 171ff6b6eca3\n"}
+<CHUNK-END>{"stream":"Removing intermediate container f30261f9d0fd\n"}
+<CHUNK-END>{"stream":"Step 7 : RUN mkdir /etc/service/node-app\n"}
+<CHUNK-END>{"stream":" ---\u003e Running in 99f74fe4491b\n"}
+<CHUNK-END>{"stream":" ---\u003e b505156ef7c1\n"}
+<CHUNK-END>{"stream":"Removing intermediate container 99f74fe4491b\n"}

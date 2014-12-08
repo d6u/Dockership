@@ -1,27 +1,33 @@
 # Simple Server Deployment (Single Server of Dockers)
 
-__SSD__ wants to make deploying simple hobby and test web apps on a single remote machine easy and automated.
-
-It uses [__Docker__](https://www.docker.com/) to build and run your app on server in isolation, so you don't have to worry about putting more than one app in a single machine with different software versions and dependencies.
+__SSD__ wants to automate the process of deploying simple hobby and test web apps, make it easier so you can focus on the fun part.
 
 ## Heads Up
 
-**SSD uses Docker to deploy and build isolated environment on your server. Thus, some Docker knowledge is expected.**
+**SSD uses [__Docker__](https://www.docker.com/) to deploy and build isolated environment on your server. Thus, some Docker knowledge is expected.**
 
-SSD also requires to setup Docker with HTTPS connections, there may be some hassle. You do have to copy files and run shell scripts on your remote machine, and I only have scripts for Ubuntu 14.04 for AWS. You are welcome to contribute more setup scripts here.
+Docker made it possible to run your apps in isolations on the same server. You don't have to worry about instaling different versions of softwares and dependencies.
+
+SSD requires to setup Docker with HTTPS connections, it may sound hassle at the beginning. But I got a bash script to set it up for you. You do have to copy files from your remote machine to you computer though. However, I only have scripts for Ubuntu 14.04 for AWS. You are welcome to add more setup scripts here.
 
 ## Prepare Remote Server
 
-In order to use this tool, first you have to install Docker on your server and make Docker accept HTTPS connection. I created a simple bash script to help you do this.
+First you have to install Docker on your server and make Docker accept HTTPS connection. I created a simple bash script to help you do this.
 
-Copy `setup-docker.sh` in this repo to your remote machine. And run `bash setup-docker.sh <you.host.name> <passphrase>`. `you.host.name` is a public domain that point to your server's IP. Unfortunately, generating certificate for HTTPS requires a domain name to do so (EC2 always come with a domain name). Passphrase is simple a password you choose for your keys.
+Copy `setup-docker.sh` in this repo to your remote machine. And run:
 
-This script will first install Docker, generate ca certificate and keys in `~/.docker` dir, then change the docker config to enable HTTPS connection. At last restart Docker daemon.
+```bash
+bash setup-docker.sh <you.host.name> <passphrase>
+```
 
-You need to copy `ca.pem`, `cert.pem` and `key.pem` to your local machine for SSD client to connect to docker. Once you have all the keys, you can test it using on your local machine (assuming you have docker installed on your local):
+`you.host.name` is a public domain that associated with your server's IP. Unfortunately, generating certificate for HTTPS requires a domain name to do so (EC2 instance always come with a domain name). `passphrase` is a password you choose for your keys.
 
-```shell
-docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H=<your host name>:2376 version
+This script will first install Docker, generate ca certificate and keys in `$HOME/.docker` dir, then change the docker config to enable HTTPS connection. At the end restart Docker daemon.
+
+You need to copy `ca.pem`, `cert.pem` and `key.pem` from `$HOME/.docker` to your local machine for SSD client to connect to docker. Once you have all the keys, you can test it using on your local machine (assuming you have docker installed on your local, OSX users refer to [boot2docker]( https://docs.docker.com/installation/mac/)):
+
+```bash
+docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H=<your.host.name>:2376 version
 ```
 
 ## Prepare Local Config
@@ -34,7 +40,7 @@ source/
     Dockerfile
     <...app files...>
 stage/
-    development/
+    production/
         ssd.json
     <...more stages.../>
 ```
@@ -49,7 +55,7 @@ stage/
 
 ### Install
 
-```shell
+```bash
 npm install -g ssd
 ```
 
@@ -59,16 +65,44 @@ npm install -g ssd
 ssd <action> [-s stage-name]
 
     actions:
-        status    Checkout the status of image and container
+        status    Checkout the information of image and container
         up        Build the image and start container
         start     Start container
         stop      Stop container
         restart   Stop then start container
-        dispatch  Execute a command inside the container
+        exec      Execute a command inside the container
+```
+
+### API
+
+You can also include ssd in your own build process.
+
+```javascript
+var ssd = require('ssd');
+
+ssd.status('<stage name>').then(function (status) {
+  // status.images
+  // status.containers
+});
+
+ssd.up('<stage name>').then(function (eventEmitter) {
+  eventEmitter.on('info', function (msg) {
+    console.info(msg);
+  });
+
+  eventEmitter.on('error', function (err) {
+    throw err;
+  });
+
+  eventEmitter.on('end', function () {
+    process.exit(0);
+  });
+});
 ```
 
 ## TODO
 
-- Support multiple images and containers
-- Support logging progress information when building images
 - Provide scaffold
+- Support multiple images and containers
+- Support dependencies among containers
+- Support logging progress information in CLI when pulling baseimages while building image

@@ -27,5 +27,16 @@
       }
     ],
     "Status": "Up 7 hours"
+  },
+  {
+    "Command": "/sbin/my_init",
+    "Created": 1416929980,
+    "Id": "96eb453b7eaa19d77f43ed453a428eba0623273f605b532a7a6e29e19072c96e",
+    "Image": "someone/baseimage:0.9.15",
+    "Names": [
+      "/thirsty_brattain"
+    ],
+    "Ports": [],
+    "Status": "Exited (0) 34 hours ago"
   }
 ]

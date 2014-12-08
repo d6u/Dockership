@@ -19,7 +19,7 @@ describe('makeTar', function () {
     });
 
     it('should resolve with archive stream if path is file', function (done) {
-      var target = path.join(__dirname, '../fixture/random-dir/random-file.txt');
+      var target = path.join(__dirname, '../fixture/make-tar-random-dir/random-file.txt');
       createArchiveStream(target)
         .then(function (archive) {
           expect(archive).instanceof(Stream);
@@ -32,7 +32,7 @@ describe('makeTar', function () {
     });
 
     it('should resolve with archive stream if path is dir', function (done) {
-      var target = path.join(__dirname, '../fixture/random-dir');
+      var target = path.join(__dirname, '../fixture/make-tar-random-dir');
       createArchiveStream(target)
       .then(function (archive) {
         expect(archive).instanceof(Stream);

@@ -12,13 +12,9 @@ var wrongConfig = require('../fixture/wrong-ssd-keys-config.json');
 describe('getKeys', function () {
 
   it('should successfully return a promise and resolve with keys', function (done) {
-    var getKeys = proxyquire('../../lib/get-docker/get-keys', {
-      '../get-config': function () {
-        return Promise.resolve(rightConfig);
-      }
-    });
+    var getKeys = proxyquire('../../lib/get-docker/get-keys', {});
 
-    getKeys()
+    getKeys(rightConfig)
       .then(function (keys) {
         expect(keys.ca.toString()).eql('ca\n');
         expect(keys.cert.toString()).eql('cert\n');
@@ -29,20 +25,19 @@ describe('getKeys', function () {
       .catch(done);
   });
 
-  it('should return hash with undefined value if path to key was wrong', function (done) {
+  it('should throw AggregateError for all failed key config if wrong path to key', function (done) {
     var spy = sinon.spy();
-    var getKeys = proxyquire('../../lib/get-docker/get-keys', {
-      '../get-config': function () {
-        return Promise.resolve(wrongConfig);
-      }
-    });
+    var getKeys = proxyquire('../../lib/get-docker/get-keys', {});
 
-    getKeys()
-      .then(function (keys) {
-        expect(keys.ca.toString()).eql('ca\n');
-        expect(keys.cert).undefined;
-        expect(keys.key).undefined;
-
+    getKeys(wrongConfig)
+      .then(function () {
+        done(new Error('should not execute'));
+      })
+      .catch(function (errors) {
+        expect(errors).instanceof(Promise.AggregateError);
+        expect(errors.length).eql(2);
+        expect(errors[0].message).eql('cert config EISDIR, read');
+        expect(errors[1].message).eql('key config EISDIR, read');
         done();
       })
       .catch(done);
