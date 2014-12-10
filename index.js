@@ -3,6 +3,8 @@ var EventEmitter = require('events').EventEmitter;
 var Promise      = require('bluebird');
 var _            = require('lodash');
 var semver       = require('semver');
+var Stream       = require('stream');
+var Writable     = Stream.Writable;
 var Docker       = require('./lib/docker-promisified');
 var fs           = require('./lib/fs-promisified');
 var async        = require('./lib/async-promisified');
@@ -226,6 +228,7 @@ Server.prototype.build = function () {
 
 Server.prototype._getImage = function () {
   this._check('emitter');
+  var emitter = this.emitter;
   return Promise.bind(this)
     .then(function () { return this.getImages(); })
     .then(function () {
