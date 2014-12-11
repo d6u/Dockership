@@ -18,16 +18,17 @@ var parseMeta            = require('./lib/parse-meta');
 
 var _hasOwn = {}.hasOwnProperty;
 
-function Server(stage) {
-  this.stage = stage;
-}
-
 function _check() {
   for (var i = 0; i < arguments.length; i++) {
     if (!_hasOwn.call(this, arguments[i]) || typeof this[arguments[i]] === 'undefined') {
       throw new PropertyMissingError(arguments[i]);
     }
   }
+}
+
+function Server(stage) {
+  this.stage = stage;
+  _check.call(this, 'stage');
 }
 
 /**
