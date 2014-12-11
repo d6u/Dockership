@@ -72,8 +72,12 @@ function readKey(file) {
   return fs.readFileAsync(path.resolve(file));
 }
 
-Server.prototype._getKeys = function (config) {
-  var keys = KEYS.map(function (key) { return readKey(config[key]); });
+Server.prototype._getKeys = function () {
+  _check.call(this, 'ssd');
+  var _this = this;
+  var keys  = KEYS.map(function (key) {
+    return readKey(_this.ssd[key]);
+  });
   return Promise.settle(keys)
     .then(function (results) {
       var errs;
@@ -87,7 +91,7 @@ Server.prototype._getKeys = function (config) {
             errs = new Promise.AggregateError();
           }
           var err = r.reason().cause;
-          err.message = KEYS[i] + ' config ' + err.message;
+          err.message = KEYS[i] + ' config error: ' + err.message;
           errs.push(err);
         }
         i += 1;
@@ -104,7 +108,7 @@ Server.prototype.getDocker = function () {
   if (!this.docker) {
     return Promise.bind(this)
       .then(function () { return this.getConfig('ssd'); })
-      .then(function () { return this._getKeys(this.ssd); })
+      .then(function () { return this._getKeys(); })
       .then(function (keys) {
         var match = /^(\w+):\/\/([\w\.]+):(\d+)$/.exec(this.ssd['connection']);
         if (!match) throw new Error('ssd config does not have correct "connection" value');
