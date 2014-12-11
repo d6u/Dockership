@@ -124,9 +124,8 @@ Server.prototype.getDocker = function () {
 };
 
 Server.prototype.getImages = function () {
+  _check.call(this, 'docker', 'meta');
   return Promise.bind(this)
-    .then(function () { return this.getDocker(); })
-    .then(function () { return this.getConfig('meta'); })
     .then(function () {
       var matcher = getMatcher(this.meta.repo);
 
@@ -158,9 +157,8 @@ Server.prototype.getImages = function () {
 };
 
 Server.prototype.getContainers = function () {
+  _check.call(this, 'docker', 'meta');
   return Promise.bind(this)
-    .then(function () { return this.getDocker(); })
-    .then(function () { return this.getConfig('meta'); })
     .then(function () {
       var matcher = getMatcher(this.meta.repo);
 
@@ -198,6 +196,14 @@ Server.prototype.getContainers = function () {
     .then(function (_containers) { this.containers = _containers.value(); });
 };
 
+Server.prototype.status = function () {
+  return Promise.bind(this)
+    .then(function () { return this.getDocker(); })
+    .then(function () { return this.getConfig('meta'); })
+    .then(function () { return this.getImages(); })
+    .then(function () { return this.getContainers(); });
+};
+
 function makeTmpDir() {
   return fs.mkdirAsync('./.tmp-ssd').catch(function (err) {
     if (err && err.cause.code !== 'EEXIST') {
@@ -225,7 +231,8 @@ Server.prototype.build = function () {
 };
 
 Server.prototype._getImage = function () {
-  _check.call(this, 'emitter');
+  _check.call(this, 'docker', 'meta', 'emitter');
+  var emitter = this.emitter;
   return Promise.bind(this)
     .then(function () { return this.getImages(); })
     .then(function () {
@@ -243,10 +250,10 @@ Server.prototype._getImage = function () {
           if (obj.flag === 'error') {
             var err = new Error(obj.content);
             err.code = 'BUILDERROR';
-            this.emitter.emit('error', err);
+            emitter.emit('error', err);
             this.emit('error', err);
           } else {
-            this.emitter.emit(obj.flag, obj.content);
+            emitter.emit(obj.flag, obj.content);
           }
           cb(null);
         };
@@ -269,7 +276,7 @@ Server.prototype._getImage = function () {
 };
 
 Server.prototype._getContainer = function () {
-  _check.call(this, 'image');
+  _check.call(this, 'docker', 'meta', 'image');
   return Promise.bind(this)
     .then(function () { return this.getContainers(); })
     .then(function () {
@@ -335,6 +342,7 @@ Server.prototype.up = function () {
   this.emitter = new EventEmitter();
 
   Promise.bind(this)
+    .then(function () { return this.getConfig('meta'); })
     .then(function () { return this.getDocker(); })
     .then(function () { return this._getImage(); })
     .then(function () { return this._getContainer(); })
