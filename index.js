@@ -164,9 +164,9 @@ Server.prototype.getImages = function () {
 };
 
 Server.prototype.getContainers = function () {
-  _check.call(this, 'docker', 'meta');
   return Promise.bind(this)
     .then(function () {
+      _check.call(this, 'docker', 'meta');
       var matcher = getMatcher(this.meta.repo);
 
       return this.docker.listContainersAsync({all: true})
