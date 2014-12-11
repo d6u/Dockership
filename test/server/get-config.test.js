@@ -5,7 +5,7 @@ var sinon      = require('sinon');
 var Promise = require('bluebird');
 var path    = require('path');
 
-describe('getConfig', function () {
+describe.skip('getConfig', function () {
 
   it('should call getJson with correct path', function () {
 
