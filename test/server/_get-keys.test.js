@@ -16,23 +16,25 @@ describe('Server', function () {
       this.server = new Server('testing');
     });
 
-    it('should throw PropertyMissingError if `ssd` is missing', function () {
-      try {
-        this.server._getKeys()
-      } catch (e) {
-        expect(e).instanceof(PropertyMissingError);
-        expect(e.propertyName).eq('ssd');
-      }
+    it('should throw PropertyMissingError if `ssd` is missing', function (done) {
+      this.server._getKeys()
+        .then(function () {
+          done(new Error('did not throw error'));
+        })
+        .catch(PropertyMissingError, function (err) {
+          expect(err.propertyName).eq('ssd');
+          done();
+        })
+        .catch(done);
     });
 
     it('should throw AggregateError for all failed key config if wrong path to key', function (done) {
       this.server.ssd = wrongConfig;
       this.server._getKeys()
         .then(function () {
-          done(new Error('should not execute'));
+          done(new Error('did not throw error'));
         })
-        .catch(function (errors) {
-          expect(errors).instanceof(Promise.AggregateError);
+        .catch(Promise.AggregateError, function (errors) {
           expect(errors.length).eql(2);
           expect(errors[0].message).eql('cert config error: EISDIR, read');
           expect(errors[1].message).eql('key config error: EISDIR, read');

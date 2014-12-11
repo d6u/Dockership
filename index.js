@@ -73,35 +73,37 @@ function readKey(file) {
 }
 
 Server.prototype._getKeys = function () {
-  _check.call(this, 'ssd');
-  var _this = this;
-  var keys  = KEYS.map(function (key) {
-    return readKey(_this.ssd[key]);
-  });
-  return Promise.settle(keys)
-    .then(function (results) {
-      var errs;
-      var dict = {};
-      var i = 0;
-      results.forEach(function (r) {
-        if (r.isFulfilled()) {
-          dict[KEYS[i]] = r.value();
-        } else {
-          if (!errs) {
-            errs = new Promise.AggregateError();
-          }
-          var err = r.reason().cause;
-          err.message = KEYS[i] + ' config error: ' + err.message;
-          errs.push(err);
-        }
-        i += 1;
-      });
-      if (errs) {
-        throw errs;
-      } else {
-        return dict;
-      }
+  return Promise.bind(this).then(function () {
+    _check.call(this, 'ssd');
+    var _this = this;
+    var keys  = KEYS.map(function (key) {
+      return readKey(_this.ssd[key]);
     });
+    return Promise.settle(keys)
+      .then(function (results) {
+        var errs;
+        var dict = {};
+        var i = 0;
+        results.forEach(function (r) {
+          if (r.isFulfilled()) {
+            dict[KEYS[i]] = r.value();
+          } else {
+            if (!errs) {
+              errs = new Promise.AggregateError();
+            }
+            var err = r.reason().cause;
+            err.message = KEYS[i] + ' config error: ' + err.message;
+            errs.push(err);
+          }
+          i += 1;
+        });
+        if (errs) {
+          throw errs;
+        } else {
+          return dict;
+        }
+      });
+  });
 };
 
 Server.prototype.getDocker = function () {
