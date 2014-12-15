@@ -62,7 +62,7 @@ switch (argv['_'][0]) {
   case 'exec':
     var cmds = argv['_'].slice(1);
     if (cmds.length) {
-      server.exec(cmds)
+      server.exec(cmds.map(String))
         .then(function (response) {
           response.setEncoding('utf8');
           response.pipe(process.stdout);
