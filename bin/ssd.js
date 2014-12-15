@@ -1,23 +1,31 @@
 #!/usr/bin/env node
 
+var Promise   = require('bluebird');
 var argv      = require('minimist')(process.argv.slice(2));
-var ssd       = require('../index');
+
+var Server    = require('../index');
 var getLogger = require('../lib/util/get-logger');
 
 var info  = getLogger('info');
 var error = getLogger('error');
 
-argv['s'] = argv['s'] || 'development';
+argv['s'] = argv['s'] || 'testing';
+
+var server = new Server(argv['s']);
 
 switch (argv['_'][0]) {
   case 'status':
-    ssd.status(argv['s']).then(function (status) {
-      getLogger('Images')(JSON.stringify(status.images, null, 2));
-      getLogger('Containers')(JSON.stringify(status.containers, null, 2));
+    server.status().then(function () {
+      getLogger('Images')(JSON.stringify(server.images, null, 2));
+      getLogger('Containers')(JSON.stringify(server.containers, null, 2));
+    })
+    .catch(function (err) {
+      error(err.stack);
+      process.exit(1);
     });
     break;
   case 'up':
-    ssd.up(argv['s']).then(function (emitter) {
+    server.up().then(function (emitter) {
       emitter.on('info', info);
 
       emitter.on('error', function (err) {

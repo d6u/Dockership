@@ -26,7 +26,7 @@ describe('dockerPromisified', function () {
 
     var spy = sandbox.spy(Promise, 'promisifyAll');
 
-    var Docker = proxyquire('../../lib/get-docker/docker-promisified', {
+    var Docker = proxyquire('../lib/docker-promisified', {
       'bluebird':  Promise,
       'dockerode': FakeDocker
     });
