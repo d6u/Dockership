@@ -63,16 +63,19 @@ npm install -g ssd
 
 ### CLI
 
-```
-ssd <action> [-s stage-name]
+```txt
+ssd [-s stage-name] <action> [action options]
+
+    -s testing
 
     actions:
-        status    Checkout the information of image and container
-        up        Build the image and start container
-        start     Start container
-        stop      Stop container
-        restart   Stop then start container
-        exec      Execute a command inside the container
+        status              Checkout the information of image and container
+        up  [-c false]      Build the image and start container
+                                with `-c` flag, we will build using cache
+        start               Start container
+        stop                Stop container
+        restart             Stop then start container
+        exec [commands...]  Execute a command inside the container
 ```
 
 ### API

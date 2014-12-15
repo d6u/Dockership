@@ -25,18 +25,19 @@ switch (argv['_'][0]) {
     });
     break;
   case 'up':
-    server.up().then(function (emitter) {
-      emitter.on('info', info);
+    server.up({cache: argv['c']})
+      .then(function (emitter) {
+        emitter.on('info', info);
 
-      emitter.on('error', function (err) {
-        error(err.stack);
-        throw err;
-      });
+        emitter.on('error', function (err) {
+          error(err.stack);
+          throw err;
+        });
 
-      emitter.on('end', function () {
-        process.exit(0);
+        emitter.on('end', function () {
+          process.exit(0);
+        });
       });
-    });
     break;
   case 'start':
     server.start().then(function () {

@@ -219,7 +219,7 @@ function makeTmpDir() {
   });
 }
 
-Server.prototype.build = function () {
+Server.prototype.build = function (opts) {
   return Promise.bind(this)
     .then(function () {
       return Promise.all([
@@ -232,7 +232,7 @@ Server.prototype.build = function () {
     .spread(function (tarPath) {
       return this.docker.buildImageAsync(tarPath, {
         t: this.meta['repo'] + ':' + this.meta['version'],
-        nocache: true
+        nocache: !opts.cache
       });
     });
 };
@@ -263,14 +263,14 @@ Server.prototype._handleBuildResponse = function (response) {
   });
 };
 
-Server.prototype._getImage = function () {
+Server.prototype._getImage = function (opts) {
   return Promise.bind(this)
     .then(function () { _check.call(this, 'docker', 'meta', 'emitter'); })
     .then(function () { return this.getImages(); })
     .then(function () {
       if (this.images.length === 0 ||
           semver.gt(this.meta.version, this.images[0].version)) {
-        return this.build();
+        return this.build(opts);
       } else {
         throw this.images[0];
       }
@@ -347,13 +347,13 @@ Server.prototype._startContainer = function () {
  * Up
  * @return {EventEmitter}
  */
-Server.prototype.up = function () {
+Server.prototype.up = function (opts) {
   this.emitter = new EventEmitter();
 
   Promise.bind(this)
     .then(function () { return this.getConfig('meta'); })
     .then(function () { return this.getDocker(); })
-    .then(function () { return this._getImage(); })
+    .then(function () { return this._getImage(opts); })
     .then(function () { return this._getContainer(); })
     .then(function () { return this._cleanUpContainers(); })
     .then(function () { return this._startContainer(); })
