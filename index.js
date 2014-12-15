@@ -285,8 +285,8 @@ Server.prototype._getImage = function () {
 };
 
 Server.prototype._getContainer = function () {
-  _check.call(this, 'docker', 'meta', 'image');
   return Promise.bind(this)
+    .then(function () { _check.call(this, 'image'); })
     .then(function () { return this.getContainers(); })
     .then(function () {
       if (this.containers.length && this.containers[0].tag === this.image.tag) {
