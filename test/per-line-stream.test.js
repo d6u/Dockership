@@ -1,15 +1,15 @@
 var expect = require('chai').expect;
 
 var Stream = require('stream');
-var path = require('path');
-var fs = require('../../lib/fs-promisified');
+var path   = require('path');
+var fs     = require('../lib/fs-promisified');
 
-var PerLineStream = require('../../lib/up/per-line-stream');
+var PerLineStream = require('../lib/per-line-stream');
 
 describe('PerLineStream', function () {
 
   it('should pipe out object contains line data and flag', function (done) {
-    fs.readFileAsync(path.join(__dirname, '../fixture/docker-response-error.txt'), {encoding: 'utf8'})
+    fs.readFileAsync(path.resolve('test/fixture/docker-response-error.txt'), {encoding: 'utf8'})
       .then(function (text) {
 
         var readable = new Stream.Readable();
@@ -46,4 +46,5 @@ describe('PerLineStream', function () {
         readable.pipe(perLine).pipe(write);
       });
   });
+
 });
