@@ -25,18 +25,19 @@ switch (argv['_'][0]) {
     });
     break;
   case 'up':
-    server.up().then(function (emitter) {
-      emitter.on('info', info);
+    server.up({cache: argv['c']})
+      .then(function (emitter) {
+        emitter.on('info', info);
 
-      emitter.on('error', function (err) {
-        error(err.stack);
-        throw err;
-      });
+        emitter.on('error', function (err) {
+          error(err.stack);
+          throw err;
+        });
 
-      emitter.on('end', function () {
-        process.exit(0);
+        emitter.on('end', function () {
+          process.exit(0);
+        });
       });
-    });
     break;
   case 'start':
     server.start().then(function () {
@@ -58,5 +59,18 @@ switch (argv['_'][0]) {
         info('Started');
       });
     break;
+  case 'exec':
+    var cmds = argv['_'].slice(1);
+    if (cmds.length) {
+      server.exec(cmds.map(String))
+        .then(function (response) {
+          response.setEncoding('utf8');
+          response.pipe(process.stdout);
+        })
+        .catch(function (err) {
+          error(err.stack);
+          process.exit(0);
+        });
+    }
   default:
 }
