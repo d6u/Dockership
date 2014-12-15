@@ -372,4 +372,43 @@ Server.prototype.up = function () {
   return Promise.resolve(this.emitter);
 };
 
+Server.prototype.start = function () {
+  return Promise.bind(this)
+    .then(function () { return this.getConfig('meta'); })
+    .then(function () { return this.getDocker(); })
+    .then(function () { return this.getContainers(); })
+    .then(function () {
+      if (this.containers.length &&
+          this.containers[0].version === this.meta.version) {
+        return this.containers[0];
+      }
+    })
+    .then(function (container) {
+      if (container) {
+        if (!/^Up/.test(container.Status)) {
+          return this.docker.getContainer(container.Id).startAsync();
+        }
+      }
+    });
+};
+
+Server.prototype.stop = function () {
+  return Promise.bind(this)
+    .then(function () { return this.getConfig('meta'); })
+    .then(function () { return this.getDocker(); })
+    .then(function () { return this.getContainers(); })
+    .then(function () {
+      var docker = this.docker;
+      return async.eachAsync(this.containers, function (container, cb) {
+        if (/^Up/.test(container.Status)) {
+          docker.getContainer(container.Id).stopAsync().then(function () {
+            cb();
+          });
+        } else {
+          cb();
+        }
+      });
+    });
+};
+
 module.exports = Server;

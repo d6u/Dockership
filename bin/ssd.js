@@ -38,5 +38,15 @@ switch (argv['_'][0]) {
       });
     });
     break;
+  case 'start':
+    server.start().then(function () {
+      info('Started');
+    });
+    break;
+  case 'stop':
+    server.stop().then(function () {
+      info('Stopped');
+    });
+    break;
   default:
 }
