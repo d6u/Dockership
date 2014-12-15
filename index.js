@@ -237,10 +237,35 @@ Server.prototype.build = function () {
     });
 };
 
-Server.prototype._getImage = function () {
-  _check.call(this, 'docker', 'meta', 'emitter');
+Server.prototype._handleBuildResponse = function (response) {
   var emitter = this.emitter;
+  return new Promise(function (resolve, reject) {
+    var writable = new Writable({objectMode: true});
+    writable._write = function (obj, encoding, cb) {
+      if (obj.flag === 'error') {
+        var err = new Error(obj.content);
+        err.code = 'BUILDERROR';
+        emitter.emit('error', err);
+        this.emit('error', err);
+      } else {
+        emitter.emit(obj.flag, obj.content);
+      }
+      cb(null);
+    };
+
+    var logging = response
+      .pipe(new PerLineStream())
+      .pipe(writable);
+
+    logging
+      .on('finish', resolve)
+      .on('error', reject);
+  });
+};
+
+Server.prototype._getImage = function () {
   return Promise.bind(this)
+    .then(function () { _check.call(this, 'docker', 'meta', 'emitter'); })
     .then(function () { return this.getImages(); })
     .then(function () {
       if (this.images.length === 0 ||
@@ -250,30 +275,7 @@ Server.prototype._getImage = function () {
         throw this.images[0];
       }
     })
-    .then(function (response) {
-      return new Promise(function (resolve, reject) {
-        var writable = new Writable({objectMode: true});
-        writable._write = function (obj, encoding, cb) {
-          if (obj.flag === 'error') {
-            var err = new Error(obj.content);
-            err.code = 'BUILDERROR';
-            emitter.emit('error', err);
-            this.emit('error', err);
-          } else {
-            emitter.emit(obj.flag, obj.content);
-          }
-          cb(null);
-        };
-
-        var logging = response
-          .pipe(new PerLineStream())
-          .pipe(writable);
-
-        logging
-          .on('finish', resolve)
-          .on('error', reject);
-      });
-    })
+    .then(function (response) { return this._handleBuildResponse(response); })
     .then(function () { return this.getImages(); })
     .then(function () { throw this.images[0]; })
     .catch(
