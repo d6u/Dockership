@@ -48,5 +48,15 @@ switch (argv['_'][0]) {
       info('Stopped');
     });
     break;
+  case 'restart':
+    server.stop()
+      .then(function () {
+        info('Stopped');
+        return server.start();
+      })
+      .then(function () {
+        info('Started');
+      });
+    break;
   default:
 }
