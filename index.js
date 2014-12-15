@@ -53,7 +53,7 @@ Server.prototype._getPath = function (name) {
 };
 
 Server.prototype.getConfig = function (name) {
-  if (!this[name]) {
+  if (this[name] == undefined) {
     return Promise.bind(this)
       .then(function () { return readJSON(this._getPath(name)); })
       .tap(function (obj) { this[name] = obj; });
