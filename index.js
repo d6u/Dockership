@@ -411,4 +411,40 @@ Server.prototype.stop = function () {
     });
 };
 
+/**
+ * Default options for container.exec method
+ * Used in `exec`
+ * @type {Object}
+ */
+var DEFAULT_EXEC_OPTION = {
+  "AttachStdout": true,
+  "AttachStderr": true,
+  "Tty": false
+};
+
+Server.prototype.exec = function (cmds) {
+  return Promise.bind(this)
+    .then(function () { return this.getConfig('meta'); })
+    .then(function () { return this.getDocker(); })
+    .then(function () { return this.getContainers(); })
+    .then(function () {
+      if (this.containers.length &&
+          this.containers[0].version === this.meta.version) {
+        return this.containers[0];
+      }
+    })
+    .then(function (container) {
+      if (container) {
+        if (/^Up/.test(container.Status)) {
+          return this.docker.getContainer(container.Id)
+            .execAsync(_.defaults({Cmd: cmds}, DEFAULT_EXEC_OPTION));
+        }
+      }
+      throw new Error('container does not exist or no container is not Up');
+    })
+    .then(function (exec) {
+      return exec.startAsync();
+    });
+};
+
 module.exports = Server;

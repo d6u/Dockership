@@ -58,5 +58,18 @@ switch (argv['_'][0]) {
         info('Started');
       });
     break;
+  case 'exec':
+    var cmds = argv['_'].slice(1);
+    if (cmds.length) {
+      server.exec(cmds)
+        .then(function (response) {
+          response.setEncoding('utf8');
+          response.pipe(process.stdout);
+        })
+        .catch(function (err) {
+          error(err.stack);
+          process.exit(0);
+        });
+    }
   default:
 }
