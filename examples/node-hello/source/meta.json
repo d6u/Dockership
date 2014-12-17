@@ -1,0 +1,5 @@
+{
+  "repo": "ssd/node-hello",
+  "version": "0.0.1",
+  "ports": ["10001:1337"]
+}
