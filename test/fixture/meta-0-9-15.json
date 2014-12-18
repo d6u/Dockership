@@ -1,5 +1,5 @@
 {
   "repo": "someone/baseimage",
   "version": "0.9.15",
-  "ports": ["10000:80"]
+  "publish": ["10000:80"]
 }
