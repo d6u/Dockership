@@ -23,6 +23,7 @@ describe('Server', function () {
       fs.readFileAsync(path.resolve('test/fixture/docker-response.txt'), {encoding: 'utf8'})
         .then(function (text) {
           var readable = new Stream.Readable();
+          readable.setTimeout = function () {};
           var pieces = text.split('<CHUNK-END>');
           var i = 0;
           readable._read = function () {
@@ -54,6 +55,7 @@ describe('Server', function () {
       fs.readFileAsync(path.resolve('test/fixture/docker-response-error.txt'), {encoding: 'utf8'})
         .then(function (text) {
           var readable = new Stream.Readable();
+          readable.setTimeout = function () {};
           var pieces = text.split('<CHUNK-END>');
           var i = 0;
           readable._read = function () {

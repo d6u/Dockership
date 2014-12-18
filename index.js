@@ -240,6 +240,7 @@ Server.prototype.build = function (opts) {
 Server.prototype._handleBuildResponse = function (response) {
   var emitter = this.emitter;
   return new Promise(function (resolve, reject) {
+    response.setTimeout(60000);
     var writable = new Writable({objectMode: true});
     writable._write = function (obj, encoding, cb) {
       if (obj.flag === 'error') {
