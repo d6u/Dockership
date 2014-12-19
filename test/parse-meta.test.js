@@ -2,7 +2,6 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 
 var parseMeta  = require('../lib/parse-meta');
-var meta_1_0_0 = require('./fixture/meta-1-0-0.json');
 
 describe('parseMeta', function () {
 
@@ -19,13 +18,24 @@ describe('parseMeta', function () {
   });
 
   it('should parse correct meta', function () {
-    expect(parseMeta(meta_1_0_0)).eql({
+    var meta = {
+      'repo': 'someone/baseimage',
+      'version': '1.0.0',
+      'publish': ['10000:80'],
+      'volume': ['/host/log:/container/log']
+    };
+
+    expect(parseMeta(meta)).eql({
       'name': '2014-11-25T15_49_05.859Z',
       'Image': 'someone/baseimage:1.0.0',
+      'Volumes': {
+        '/container/log': {}
+      },
       'ExposedPorts': {
         '80/tcp': {}
       },
       'HostConfig': {
+        'Binds': ['/host/log:/container/log'],
         'PortBindings': {
           '80/tcp': [{
             'HostPort': '10000'
@@ -33,6 +43,38 @@ describe('parseMeta', function () {
         }
       }
     });
+  });
+
+  it('should throw PropertyMissingError if `repo` is not defined', function (done) {
+    var meta = {
+      'version': '1.0.0'
+    };
+
+    try {
+      parseMeta(meta);
+      done(new Error('did not throw error'));
+    } catch (err) {
+      expect(err.name).eq('PropertyMissingError');
+      expect(err.message).eq('"repo" is required but not defined');
+      done();
+    }
+  });
+
+  it('should throw FieldNotValidError if `publish` is not in valid format', function (done) {
+    var meta = {
+      'repo': 'someone/baseimage',
+      'version': '1.0.0',
+      'publish': ['12345:123:123'] // 12345 is not a IP addr
+    };
+
+    try {
+      parseMeta(meta);
+      done(new Error('did not throw error'));
+    } catch (err) {
+      expect(err.name).eq('FieldNotValidError');
+      expect(err.message).eq('"publish" with value "12345:123:123" is not in valid format, it should match: /^(?!:)((<ip>:)?(<hostPort>)?:)?<containerPort>$/');
+      done();
+    }
   });
 
 });
