@@ -211,25 +211,25 @@ Server.prototype.status = function () {
     .then(function () { return this.getContainers(); });
 };
 
-function makeTmpDir() {
+Server.prototype._makeTmpDir = function () {
   return fs.mkdirAsync('./.tmp-ssd').catch(function (err) {
     if (err && err.cause.code !== 'EEXIST') {
       throw err;
     }
   });
-}
+};
 
 Server.prototype.build = function (opts) {
   return Promise.bind(this)
     .then(function () {
       return Promise.all([
-        makeTar('./source', './.tmp-ssd'),
         this.getConfig('meta'),
         this.getDocker(),
-        makeTmpDir()
+        this._makeTmpDir()
       ]);
     })
-    .spread(function (tarPath) {
+    .then(function () { return makeTar('./source', './.tmp-ssd'); })
+    .then(function (tarPath) {
       return this.docker.buildImageAsync(tarPath, {
         t: this.meta['repo'] + ':' + this.meta['version'],
         nocache: !opts.cache
