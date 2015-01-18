@@ -28,8 +28,8 @@ var Promise = require('bluebird');
 var Server = require('../index');
 var fs = require('../lib/fs-promisified');
 var getLogger = require('../lib/util/get-logger');
-var info = getLogger('info', 'green');
-var error = getLogger('error', 'red');
+var info = getLogger.info;
+var error = getLogger.error;
 
 argv['s'] = argv['s'] || 'testing';
 
