@@ -69,6 +69,7 @@ ssd [-s stage-name] <action> [action options]
     -s testing
 
     actions:
+        init                Scaffold current project
         status              Checkout the information of image and container
         up  [-c false]      Build the image and start container
                                 with `-c` flag, we will build using cache
