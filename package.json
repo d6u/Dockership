@@ -1,6 +1,6 @@
 {
   "name": "ssd",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Simple Server Deployment",
   "keywords": [
     "docker",
