@@ -1,6 +1,10 @@
+// This list contains complete params for Docker run command
+// You don't need all of them
+// Please delete comment and lines that are not used
+
 {
-  "repo"         : "someone/baseimage",
-  "version"      : "1.0.0",
+  "repo"         : "someone/baseimage", // required
+  "version"      : "1.0.0",             // required
   "name"         : "",
 
   "hostname"     : "",

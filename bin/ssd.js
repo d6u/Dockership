@@ -23,15 +23,13 @@ if (argv['h']) {
   process.exit(0);
 }
 
-var path      = require('path');
-var Promise   = require('bluebird');
-
-var Server    = require('../index');
-var fs        = require('../lib/fs-promisified');
+var path = require('path');
+var Promise = require('bluebird');
+var Server = require('../index');
+var fs = require('../lib/fs-promisified');
 var getLogger = require('../lib/util/get-logger');
-
-var info  = getLogger('info');
-var error = getLogger('error');
+var info = getLogger('info', 'green');
+var error = getLogger('error', 'red');
 
 argv['s'] = argv['s'] || 'testing';
 
@@ -42,12 +40,12 @@ var server = new Server(argv['s']);
  * @return {Promise}
  */
 function mkdir(dirPath) {
-  console.log('Making directory "' + dirPath + '"');
+  info('Making directory "' + dirPath + '"');
   return fs.mkdirAsync(path.resolve('./' + dirPath));
 }
 
 function cpFile(fromPath, toPath) {
-  console.log('Making template file "' + toPath.replace('./', '') + '"');
+  info('Making template file "' + toPath.replace('./', '') + '"');
   return new Promise(function (resolve, reject) {
     var rs = fs.createReadStream(fromPath);
     var ws = fs.createWriteStream(toPath);
@@ -58,30 +56,19 @@ function cpFile(fromPath, toPath) {
 switch (argv['_'][0]) {
   case 'init':
     mkdir('source')
-      .then(function () {
-        return mkdir('stage');
-      })
-      .then(function () {
-        return mkdir('stage/test');
-      })
-      .then(function () {
-        return mkdir('stage/production');
-      })
-      .then(function () {
-        return cpFile(path.join(__dirname, '..', 'scaffold', 'meta.json'), './source/meta.json');
-      })
-      .then(function () {
-        return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/test/ssd.json');
-      })
-      .then(function () {
-        return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/production/ssd.json');
-      })
+      .then(function () { return mkdir('stage'); })
+      .then(function () { return mkdir('stage/test'); })
+      .then(function () { return mkdir('stage/production'); })
+      .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'meta.json'), './source/meta.json'); })
+      .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/test/ssd.json'); })
+      .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/production/ssd.json'); })
       .error(function (err) {
         if (err.cause.errno === 47) {
-          console.log('"' + err.cause.path + '" already exists');
+          error('"' + err.cause.path + '" already exists');
         } else {
-          console.error(err.cause);
+          error(err.cause);
         }
+        process.exit(1);
       });
     break;
   case 'status':
