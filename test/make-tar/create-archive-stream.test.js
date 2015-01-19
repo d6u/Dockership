@@ -45,13 +45,13 @@ describe('makeTar', function () {
     });
 
     it('should throw error if path not exist', function (done) {
-      var target = path.join(process.cwd(), 'no-where');
+      var target = path.resolve('no-where');
       createArchiveStream(target)
         .then(function () {
           done(new Error('did not throw error'));
         })
         .catch(function (err) {
-          expect(err.name).eql('OperationalError');
+          expect(err.isOperational).true;
           done();
         })
         .catch(done);

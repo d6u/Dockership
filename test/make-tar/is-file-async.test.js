@@ -51,7 +51,7 @@ describe('makeTar', function () {
         done(new Error('did not throw error'));
       })
       .catch(function (err) {
-        expect(err.name).eql('OperationalError')
+        expect(err.isOperational).true;
         done();
       })
       .catch(done);
