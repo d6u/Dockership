@@ -57,10 +57,10 @@ switch (argv['_'][0]) {
   case 'init':
     mkdir('source')
       .then(function () { return mkdir('stage'); })
-      .then(function () { return mkdir('stage/test'); })
+      .then(function () { return mkdir('stage/testing'); })
       .then(function () { return mkdir('stage/production'); })
       .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'meta.json'), './source/meta.json'); })
-      .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/test/ssd.json'); })
+      .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/testing/ssd.json'); })
       .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/production/ssd.json'); })
       .error(function (err) {
         if (err.cause.errno === 47) {
@@ -82,19 +82,21 @@ switch (argv['_'][0]) {
     });
     break;
   case 'up':
-    server.up({cache: argv['c']})
-      .then(function (emitter) {
-        emitter.on('info', info);
-
-        emitter.on('error', function (err) {
-          error(err.stack);
-          throw err;
-        });
-
-        emitter.on('end', function () {
-          process.exit(0);
-        });
+    var progress = getLogger('process', 'yellow');
+    server
+      .on('info', function (msg) {
+        info(msg['info']);
+      })
+      .on('error', function (err) {
+        error(err.message);
+        error(err.stack);
+        process.exit(1);
+      })
+      .on('progress', progress)
+      .on('end', function () {
+        process.exit(0);
       });
+    server.up({cache: argv['c']});
     break;
   case 'start':
     server.start().then(function () {

@@ -15,70 +15,63 @@ describe('Server', function () {
     }
 
     it('should emit info and end', function (done) {
-      var _this = this;
+      var server = this.server;
 
-      this.server.getConfig          = spy();
-      this.server.getDocker          = spy();
-      this.server._getImage          = spy();
-      this.server._getContainer      = spy();
-      this.server._cleanUpContainers = spy();
-      this.server._startContainer    = spy();
-      this.server.container          = {Id: 'abc'};
+      server.getConfig          = spy();
+      server.getDocker          = spy();
+      server._getImage          = spy();
+      server._getContainer      = spy();
+      server._cleanUpContainers = spy();
+      server._startContainer    = spy();
+      server.container          = {Id: 'abc'};
 
-      this.server.up()
-        .then(function (emitter) {
-          var infoArr = ['container up and running', {Id: 'abc'}];
-          emitter.on('info', function (info) {
-            expect(info).eql(infoArr.shift());
-          });
-          emitter.on('end', function () {
-            expect(infoArr.length).eql(0);
-            expect(_this.server.getConfig.callCount).eq(1);
-            expect(_this.server.getDocker.callCount).eq(1);
-            expect(_this.server._getImage.callCount).eq(1);
-            expect(_this.server._getContainer.callCount).eq(1);
-            expect(_this.server._cleanUpContainers.callCount).eq(1);
-            expect(_this.server._startContainer.callCount).eq(1);
-
-            done();
-          });
-        })
-        .catch(done);
+      var infoArr = ['container up and running', {Id: 'abc'}];
+      server.on('info', function (info) {
+        expect(info).eql(infoArr.shift());
+      });
+      server.on('end', function () {
+        expect(infoArr.length).eql(0);
+        expect(server.getConfig.callCount).eq(1);
+        expect(server.getDocker.callCount).eq(1);
+        expect(server._getImage.callCount).eq(1);
+        expect(server._getContainer.callCount).eq(1);
+        expect(server._cleanUpContainers.callCount).eq(1);
+        expect(server._startContainer.callCount).eq(1);
+        done();
+      });
+      server.up().catch(done);
     });
 
     it('should emit error and end', function (done) {
-      var _this = this;
+      var server = this.server;
       var e = new Error('123');
 
-      this.server.getConfig          = spy();
-      this.server.getDocker          = spy();
-      this.server._getImage          = spy();
-      this.server._getContainer      = spy();
-      this.server._cleanUpContainers = spy();
-      this.server._startContainer    = sinon.spy(function () {
+      server.getConfig          = spy();
+      server.getDocker          = spy();
+      server._getImage          = spy();
+      server._getContainer      = spy();
+      server._cleanUpContainers = spy();
+      server._startContainer    = sinon.spy(function () {
         throw e;
       });
 
       var i = 0;
-      this.server.up()
-        .then(function (emitter) {
-          emitter.on('error', function (err) {
-            expect(err).eq(e);
-            i += 1;
-          });
-          emitter.on('end', function () {
-            expect(i).eql(1);
-            expect(_this.server.getConfig.callCount).eq(1);
-            expect(_this.server.getDocker.callCount).eq(1);
-            expect(_this.server._getImage.callCount).eq(1);
-            expect(_this.server._getContainer.callCount).eq(1);
-            expect(_this.server._cleanUpContainers.callCount).eq(1);
-            expect(_this.server._startContainer.callCount).eq(1);
+      server.on('error', function (err) {
+        expect(err).eq(e);
+        i += 1;
+      });
+      server.on('end', function () {
+        expect(i).eql(1);
+        expect(server.getConfig.callCount).eq(1);
+        expect(server.getDocker.callCount).eq(1);
+        expect(server._getImage.callCount).eq(1);
+        expect(server._getContainer.callCount).eq(1);
+        expect(server._cleanUpContainers.callCount).eq(1);
+        expect(server._startContainer.callCount).eq(1);
 
-            done();
-          });
-        })
-        .catch(done);
+        done();
+      });
+      server.up().catch(done);
     });
 
   });

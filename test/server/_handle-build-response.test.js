@@ -49,8 +49,7 @@ describe('Server', function () {
     });
 
     it('should emit error', function (done) {
-      var _this = this;
-      this.server.emitter = new EventEmitter();
+      var server = this.server;
 
       fs.readFileAsync(path.resolve('test/fixture/docker-response-error.txt'), {encoding: 'utf8'})
         .then(function (text) {
@@ -67,23 +66,25 @@ describe('Server', function () {
           };
 
           var j = 0;
-          _this.server.emitter.on('info', function (str) {
+          server.on('info', function (str) {
             expect(j).lte(i);
             j += 1;
           });
 
-          _this.server.emitter.on('error', function (err) {
-            expect(err.code).eql('BUILDERROR');
+          server.on('error', function (err) {
             expect(err.message).eql('runit-app.sh: no such file or directory');
+            expect(err.errorDetail).eql({message: 'runit-app.sh: no such file or directory'});
+            expect(err.code).eql('BUILDERROR');
           });
 
-          _this.server._handleBuildResponse(readable)
+          server._handleBuildResponse(readable)
             .then(function () {
-              done(new Error('should not execute'));
+              done(new Error('Did not throw error'));
             })
             .catch(function (err) {
               expect(err.code).eql('BUILDERROR');
               expect(err.message).eql('runit-app.sh: no such file or directory');
+              expect(err.errorDetail).eql({message: 'runit-app.sh: no such file or directory'});
               done();
             })
             .catch(done);
