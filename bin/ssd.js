@@ -30,6 +30,7 @@ var fs = require('../lib/fs-promisified');
 var getLogger = require('../lib/util/get-logger');
 var info = getLogger.info;
 var error = getLogger.error;
+var progress = getLogger('process', 'yellow');
 
 argv['s'] = argv['s'] || 'testing';
 
@@ -82,19 +83,17 @@ switch (argv['_'][0]) {
     });
     break;
   case 'up':
-    server.up({cache: argv['c']})
-      .then(function (emitter) {
-        emitter.on('info', info);
-
-        emitter.on('error', function (err) {
-          error(err.stack);
-          throw err;
-        });
-
-        emitter.on('end', function () {
-          process.exit(0);
-        });
+    server
+      .on('info', info)
+      .on('error', function (err) {
+        error(err.message);
+        throw err;
+      })
+      .on('progress', progress)
+      .on('end', function () {
+        process.exit(0);
       });
+    server.up({cache: argv['c']});
     break;
   case 'start':
     server.start().then(function () {

@@ -270,13 +270,10 @@ Server.prototype._handleBuildResponse = function (response) {
           }
           cb();
         } else if (msg['error'] || msg['errorDetail']) {
-          _this.emit('error', {
-            error: msg['error'],
-            errorDetail: msg['errorDetail']
-          });
           var err = new Error(msg['error']);
           err.errorDetail = msg['errorDetail'];
           err.code = 'BUILDERROR';
+          _this.emit('error', err);
           cb(err);
         } else {
           console.error('Uncaught response --> ', msg);
@@ -289,7 +286,7 @@ Server.prototype._handleBuildResponse = function (response) {
 
 Server.prototype._getImage = function (opts) {
   return Promise.bind(this)
-    .then(function () { _check.call(this, 'docker', 'meta', 'emitter'); })
+    .then(function () { _check.call(this, 'docker', 'meta'); })
     .then(function () { return this.getImages(); })
     .then(function () {
       if (this.images.length === 0 ||
@@ -368,8 +365,15 @@ Server.prototype._startContainer = function () {
 };
 
 /**
- * Up
- * @return {EventEmitter}
+ * Run the process of
+ *   1. build image (if not exist)
+ *   2. cleanup old container (if any)
+ *   3. start container (if not start)
+ *
+ * Within the process, info and error will be emitted on `server` instance.
+ * Note this will not throw error on returned promise.
+ *
+ * @return {Promise}
  */
 Server.prototype.up = function (opts) {
   return Promise.bind(this)

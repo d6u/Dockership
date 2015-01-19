@@ -72,12 +72,9 @@ describe('Server', function () {
           });
 
           server.on('error', function (err) {
-            expect(err).eql({
-              error: 'runit-app.sh: no such file or directory',
-              errorDetail: {
-                message: 'runit-app.sh: no such file or directory'
-              }
-            });
+            expect(err.message).eql('runit-app.sh: no such file or directory');
+            expect(err.errorDetail).eql({message: 'runit-app.sh: no such file or directory'});
+            expect(err.code).eql('BUILDERROR');
           });
 
           server._handleBuildResponse(readable)
