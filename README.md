@@ -65,26 +65,31 @@ ssd [-s stage-name] <action> [action options]
 You can also require `ssd` in your own build script.
 
 ```javascript
-var ssd = require('ssd');
+var Server = require('ssd');
 
-ssd.status('<stage name>').then(function (status) {
-  // status.images
-  // status.containers
+var s = new Server('<stage name>');
+
+s.status().then(function () {
+  console.log(s.images);
+  console.log(s.containers);
 });
 
-ssd.up('<stage name>').then(function (eventEmitter) {
-  eventEmitter.on('info', function (msg) {
-    console.info(msg);
-  });
+// `s` is a event emitter instance
+s.on('info', function (msg) {
 
-  eventEmitter.on('error', function (err) {
-    throw err;
-  });
-
-  eventEmitter.on('end', function () {
-    process.exit(0);
-  });
 });
+
+s.on('error', function (err) {
+
+});
+
+// `end` is emitted when `up` finish or on error
+s.on('end', function () {
+
+});
+
+// status messages will be emitted on `s` instance
+s.up({cache: false});
 ```
 
 ### Local Project Structure Config
