@@ -30,7 +30,6 @@ var fs = require('../lib/fs-promisified');
 var getLogger = require('../lib/util/get-logger');
 var info = getLogger.info;
 var error = getLogger.error;
-var progress = getLogger('process', 'yellow');
 
 argv['s'] = argv['s'] || 'testing';
 
@@ -58,10 +57,10 @@ switch (argv['_'][0]) {
   case 'init':
     mkdir('source')
       .then(function () { return mkdir('stage'); })
-      .then(function () { return mkdir('stage/test'); })
+      .then(function () { return mkdir('stage/testing'); })
       .then(function () { return mkdir('stage/production'); })
       .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'meta.json'), './source/meta.json'); })
-      .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/test/ssd.json'); })
+      .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/testing/ssd.json'); })
       .then(function () { return cpFile(path.join(__dirname, '..', 'scaffold', 'ssd.json'), './stage/production/ssd.json'); })
       .error(function (err) {
         if (err.cause.errno === 47) {
@@ -83,11 +82,15 @@ switch (argv['_'][0]) {
     });
     break;
   case 'up':
+    var progress = getLogger('process', 'yellow');
     server
-      .on('info', info)
+      .on('info', function (msg) {
+        info(msg['info']);
+      })
       .on('error', function (err) {
         error(err.message);
-        throw err;
+        error(err.stack);
+        process.exit(1);
       })
       .on('progress', progress)
       .on('end', function () {

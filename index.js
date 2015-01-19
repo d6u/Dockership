@@ -259,7 +259,7 @@ Server.prototype._handleBuildResponse = function (response) {
         var obj;
         if (msg['stream']) {
           _this.emit('info', {
-            info: msg['stream']
+            info: msg['stream'].trimRight()
           });
           if (msg['progress'] || msg['progressDetail']) {
             _this.emit('progress', {
@@ -271,6 +271,7 @@ Server.prototype._handleBuildResponse = function (response) {
           cb();
         } else if (msg['error'] || msg['errorDetail']) {
           var err = new Error(msg['error']);
+          Error.captureStackTrace(this, Error);
           err.errorDetail = msg['errorDetail'];
           err.code = 'BUILDERROR';
           _this.emit('error', err);
