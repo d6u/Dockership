@@ -1,14 +1,14 @@
 'use strict';
 
 var path         = require('path');
-var util = require('util');
+var util         = require('util');
 var EventEmitter = require('events').EventEmitter;
-var Promise      = require('bluebird');
+var Bluebird     = require('bluebird');
 var _            = require('lodash');
 var semver       = require('semver');
 var Stream       = require('stream');
 var Writable     = Stream.Writable;
-var through2 = require('through2');
+var through2     = require('through2');
 var Docker       = require('./lib/docker-promisified');
 var fs           = require('./lib/fs-promisified');
 var async        = require('./lib/async-promisified');
@@ -65,11 +65,11 @@ Server.prototype._getPath = function (name) {
 
 Server.prototype.getConfig = function (name) {
   if (this[name] == undefined) {
-    return Promise.bind(this)
+    return Bluebird.bind(this)
       .then(function () { return readJSON(this._getPath(name)); })
       .tap(function (obj) { this[name] = obj; });
   } else {
-    return Promise.resolve(this[name]);
+    return Bluebird.resolve(this[name]);
   }
 };
 
@@ -84,13 +84,13 @@ function readKey(file) {
 }
 
 Server.prototype._getKeys = function () {
-  return Promise.bind(this).then(function () {
+  return Bluebird.bind(this).then(function () {
     _check.call(this, 'ssd');
     var _this = this;
     var keys  = KEYS.map(function (key) {
       return readKey(_this.ssd[key]);
     });
-    return Promise.settle(keys)
+    return Bluebird.settle(keys)
       .then(function (results) {
         var errs;
         var dict = {};
@@ -100,7 +100,7 @@ Server.prototype._getKeys = function () {
             dict[KEYS[i]] = r.value();
           } else {
             if (!errs) {
-              errs = new Promise.AggregateError();
+              errs = new Bluebird.AggregateError();
             }
             var err = r.reason().cause;
             err.message = KEYS[i] + ' config error: ' + err.message;
@@ -119,7 +119,7 @@ Server.prototype._getKeys = function () {
 
 Server.prototype.getDocker = function () {
   if (!this.docker) {
-    return Promise.bind(this)
+    return Bluebird.bind(this)
       .then(function () { return this.getConfig('ssd'); })
       .then(function () { return this._getKeys(); })
       .then(function (keys) {
@@ -137,12 +137,12 @@ Server.prototype.getDocker = function () {
         return this.docker;
       });
   } else {
-    return Promise.resolve(this.docker);
+    return Bluebird.resolve(this.docker);
   }
 };
 
 Server.prototype.getImages = function () {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () {
       _check.call(this, 'docker', 'meta');
       var matcher = getMatcher(this.meta.repo);
@@ -175,7 +175,7 @@ Server.prototype.getImages = function () {
 };
 
 Server.prototype.getContainers = function () {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () {
       _check.call(this, 'docker', 'meta');
       var matcher = getMatcher(this.meta.repo);
@@ -215,7 +215,7 @@ Server.prototype.getContainers = function () {
 };
 
 Server.prototype.status = function () {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () { return this.getDocker(); })
     .then(function () { return this.getConfig('meta'); })
     .then(function () { return this.getImages(); })
@@ -231,9 +231,9 @@ Server.prototype._makeTmpDir = function () {
 };
 
 Server.prototype.build = function (opts) {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () {
-      return Promise.join(this.getConfig('meta'), this.getDocker(), this._makeTmpDir());
+      return Bluebird.join(this.getConfig('meta'), this.getDocker(), this._makeTmpDir());
     })
     .then(function () { return makeTar('./source', './.tmp-ssd'); })
     .then(function (tarPath) {
@@ -248,11 +248,11 @@ Server.prototype.build = function (opts) {
  * Dedicated to consume response stream returned by `docker.buildImage`
  *   messages will be emitted on Server instance.
  * @param  {Stream} response
- * @return {Promise}
+ * @return {Bluebird}
  */
 Server.prototype._handleBuildResponse = function (response) {
   var _this = this;
-  return new Promise(function (resolve, reject) {
+  return new Bluebird(function (resolve, reject) {
     response.setTimeout(60000);
     var logging = response.pipe(new ParseJSONResponse())
       .pipe(through2.obj(function (msg, enc, cb) {
@@ -286,7 +286,7 @@ Server.prototype._handleBuildResponse = function (response) {
 };
 
 Server.prototype._getImage = function (opts) {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () { _check.call(this, 'docker', 'meta'); })
     .then(function () { return this.getImages(); })
     .then(function () {
@@ -307,7 +307,7 @@ Server.prototype._getImage = function (opts) {
 };
 
 Server.prototype._getContainer = function () {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () { _check.call(this, 'image'); })
     .then(function () { return this.getContainers(); })
     .then(function () {
@@ -318,7 +318,7 @@ Server.prototype._getContainer = function () {
 };
 
 Server.prototype._cleanUpContainers = function () {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () {
       return _.filter(this.containers, function (container) {
         return !(this.container && this.container.Id === container.Id);
@@ -327,7 +327,7 @@ Server.prototype._cleanUpContainers = function () {
     .then(function (containers) {
       var _this = this;
       return async.eachAsync(containers, function (containerData, cb) {
-        return Promise.try(function () {
+        return Bluebird.try(function () {
             return _this.docker.getContainer(containerData.Id);
           })
           .tap(function (container) {
@@ -344,7 +344,7 @@ Server.prototype._cleanUpContainers = function () {
 };
 
 Server.prototype._startContainer = function () {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () {
       if (this.container !== undefined) {
         if (/^Up/.test(this.container.Status)) {
@@ -374,10 +374,10 @@ Server.prototype._startContainer = function () {
  * Within the process, info and error will be emitted on `server` instance.
  * Note this will not throw error on returned promise.
  *
- * @return {Promise}
+ * @return {Bluebird}
  */
 Server.prototype.up = function (opts) {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () { return this.getConfig('meta'); })
     .then(function () { return this.getDocker(); })
     .then(function () { return this._getImage(opts); })
@@ -398,7 +398,7 @@ Server.prototype.up = function (opts) {
 };
 
 Server.prototype.start = function () {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () { return this.getConfig('meta'); })
     .then(function () { return this.getDocker(); })
     .then(function () { return this.getContainers(); })
@@ -418,7 +418,7 @@ Server.prototype.start = function () {
 };
 
 Server.prototype.stop = function () {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () { return this.getConfig('meta'); })
     .then(function () { return this.getDocker(); })
     .then(function () { return this.getContainers(); })
@@ -448,7 +448,7 @@ var DEFAULT_EXEC_OPTION = {
 };
 
 Server.prototype.exec = function (cmds) {
-  return Promise.bind(this)
+  return Bluebird.bind(this)
     .then(function () { return this.getConfig('meta'); })
     .then(function () { return this.getDocker(); })
     .then(function () { return this.getContainers(); })
