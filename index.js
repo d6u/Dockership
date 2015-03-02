@@ -17,161 +17,62 @@ var PropertyMissingError = require('./lib/property-missing-error');
 var readJSON             = require('./lib/read-json');
 var getMatcher           = require('./lib/util/get-matcher');
 var makeTar              = require('./lib/make-tar');
-var ParseJSONResponse = require('./lib/parse-json-response.js');
+var ParseJSONResponse    = require('./lib/parse-json-response.js');
 var parseMeta            = require('./lib/parse-meta');
 
-var _hasOwn = {}.hasOwnProperty;
-
-function _check() {
-  for (var i = 0; i < arguments.length; i++) {
-    if (!_hasOwn.call(this, arguments[i]) || typeof this[arguments[i]] === 'undefined') {
-      throw new PropertyMissingError(arguments[i]);
-    }
+function _check(variable, name) {
+  if (variable == null) {
+    throw new PropertyMissingError(name);
   }
 }
 
 /**
+ * Constructor
  *
- * @param {[type]} stage [description]
+ * @param {Object} opts
+ * @param {Object} opts.dockerfileContext - path to dockerfile dir relative to cwd
+ * @param {Object} opts.docker - options pass to dockerode
+ * @param {Object} opts.meta - definations for the container
  */
-function Server(stage) {
-  this.stage = stage;
-  _check.call(this, 'stage');
+function Server(opts) {
+  _check(opts.dockerfileContext, 'opts.dockerfileContext');
+  _check(opts.docker, 'opts.docker');
+  _check(opts.meta, 'opts.meta');
+  this.opts = opts;
+  this.docker = new Docker(this.opts.docker);
   EventEmitter.call(this);
 }
 
 util.inherits(Server, EventEmitter);
 
-/**
- * Used in `._getPath`
- * @type {Object}
- */
-var CONFIG_PATHS = {
-  'meta': function () {
-    return path.resolve('source', 'meta.json');
-  },
-  'ssd': function () {
-    _check.call(this, 'stage');
-    return path.resolve('stage', this.stage, 'ssd.json');
-  }
-};
-
-Server.prototype._getPath = function (name) {
-  if (!(name in CONFIG_PATHS)) {
-    throw new Error('cannot recognize config name "' + name + '"');
-  }
-  return CONFIG_PATHS[name].call(this);
-};
-
-Server.prototype.getConfig = function (name) {
-  if (this[name] == undefined) {
-    return Bluebird.bind(this)
-      .then(function () { return readJSON(this._getPath(name)); })
-      .tap(function (obj) { this[name] = obj; });
-  } else {
-    return Bluebird.resolve(this[name]);
-  }
-};
-
-/**
- * Used in `._getKeys`
- * @type {Array}
- */
-var KEYS = ['ca', 'cert', 'key'];
-
-function readKey(file) {
-  return fs.readFileAsync(path.resolve(file));
-}
-
-Server.prototype._getKeys = function () {
-  return Bluebird.bind(this).then(function () {
-    _check.call(this, 'ssd');
-    var _this = this;
-    var keys  = KEYS.map(function (key) {
-      return readKey(_this.ssd[key]);
+Server.prototype._remoteImages = function () {
+  return this.docker
+  .listImagesAsync()
+  .then(_)
+  .call('filter', function (image) {
+    var matcher = getMatcher(this.opts.meta.repo);
+    if (image.RepoTags.length > 1) {
+      this.emit('warn', 'detected image with multiple RepoTags:\n' + JSON.stringify(image, null, 4));
+    }
+    image.RepoTags.forEach(function (tag) {
+      var m = matcher(tag);
+      // For image with multiple RepoTags, we used tag with greatest version
+      if (m && semver.valid(m.version) && (!image.version || semver.gt(m.version, image.version))) {
+        image.tag     = m.tag;
+        image.repo    = m.repo;
+        image.version = m.version;
+      }
     });
-    return Bluebird.settle(keys)
-      .then(function (results) {
-        var errs;
-        var dict = {};
-        var i = 0;
-        results.forEach(function (r) {
-          if (r.isFulfilled()) {
-            dict[KEYS[i]] = r.value();
-          } else {
-            if (!errs) {
-              errs = new Bluebird.AggregateError();
-            }
-            var err = r.reason().cause;
-            err.message = KEYS[i] + ' config error: ' + err.message;
-            errs.push(err);
-          }
-          i += 1;
-        });
-        if (errs) {
-          throw errs;
-        } else {
-          return dict;
-        }
-      });
-  });
-};
-
-Server.prototype.getDocker = function () {
-  if (!this.docker) {
-    return Bluebird.bind(this)
-      .then(function () { return this.getConfig('ssd'); })
-      .then(function () { return this._getKeys(); })
-      .then(function (keys) {
-        var match = /^(\w+):\/\/([\w\.]+):(\d+)$/.exec(this.ssd['connection']);
-        if (!match) throw new Error('ssd config does not have correct "connection" value');
-        this.docker = new Docker({
-          protocol: match[1],
-          host: match[2],
-          port: match[3],
-          ca:   keys.ca,
-          cert: keys.cert,
-          key:  keys.key,
-          timeout: 5000
-        });
-        return this.docker;
-      });
-  } else {
-    return Bluebird.resolve(this.docker);
-  }
-};
-
-Server.prototype.getImages = function () {
-  return Bluebird.bind(this)
-    .then(function () {
-      _check.call(this, 'docker', 'meta');
-      var matcher = getMatcher(this.meta.repo);
-
-      return this.docker.listImagesAsync()
-        .then(function (images) {
-          return _(images)
-            .filter(function (image) {
-              for (var i = 0; i < image.RepoTags.length; i++) {
-                var m = matcher(image.RepoTags[i]);
-                if (m !== undefined && semver.valid(m.version) &&
-                    (!image.version || semver.lt(m.version, image.version))) {
-                  image.tag     = m.tag;
-                  image.repo    = m.repo;
-                  image.version = m.version;
-                }
-              }
-              return image.tag; // truthy value
-            })
-            .sort(function (a, b) {
-              if (semver.gt(a.version, b.version)) {
-                return -1;
-              } else {
-                return 1;
-              }
-            });
-        });
-    })
-    .then(function (_images) { this.images = _images.value(); });
+    return image.tag; // truthy value
+  }, this)
+  .call('sort', function (a, b) {
+    if (semver.gt(a.version, b.version)) {
+      return -1;
+    } else {
+      return 1;
+    }
+  })
+  .call('value');
 };
 
 Server.prototype.getContainers = function () {
