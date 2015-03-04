@@ -9,6 +9,7 @@ var semver       = require('semver');
 var Stream       = require('stream');
 var Writable     = Stream.Writable;
 var through2     = require('through2');
+var archiver     = require('archiver');
 var Docker       = require('./lib/docker-promisified');
 var fs           = require('./lib/fs-promisified');
 var async        = require('./lib/async-promisified');
@@ -75,6 +76,100 @@ Server.prototype._remoteImages = function () {
   .call('value');
 };
 
+Server.prototype._getImage = function () {
+  return this._remoteImages()
+  .bind(this)
+  .then(function (images) {
+    if (this._isLocalNewer(images[0])) {
+      return this._buildImage();
+    } else {
+      throw images[0];
+    }
+  })
+  .then(function (response) { return this._handleBuildResponse(response); })
+  .then(function () { return this._remoteImages(); })
+  .then(function (images) { throw images[0]; })
+  .catch(function isImage(obj) {
+    return obj.Id !== undefined;
+  }, function (image) {
+    return this.image = image;
+  });
+};
+
+Server.prototype._isLocalNewer = function (image) {
+  return image == null || semver.gt(this.opts.meta.version, image.version);
+};
+
+Server.prototype._buildImage = function () {
+  return this._makeTar(this.opts.dockerfileContext)
+  .bind(this)
+  .then(function (tarContent) {
+    return this.docker.buildImageAsync(tarContent, {
+      t: this.opts.meta.repo + ':' + this.opts.meta.version,
+      nocache: !this.opts.cache
+    });
+  });
+};
+
+Server.prototype._makeTar = function (dirPath) {
+  return new Bluebird(function (resolve, reject) {
+    var archive = archiver('tar');
+    var bufs = [];
+    archive.on('error', function (err) {
+      reject(err);
+    });
+    archive.on('data', function (d) {
+      bufs.push(d);
+    })
+    archive.on('end', function () {
+      resolve(Buffer.concat(bufs));
+    });
+    archive.bulk([{expand: true, cwd: dirPath, src: ['**']}]);
+    archive.finalize();
+  });
+};
+
+/**
+ * Dedicated to consume response stream returned by `docker.buildImage`
+ *   messages will be emitted on Server instance.
+ * @param  {Stream} response
+ * @return {Bluebird}
+ */
+Server.prototype._handleBuildResponse = function (response) {
+  var _this = this;
+  return new Bluebird(function (resolve, reject) {
+    response.setTimeout(60000);
+    var logging = response.pipe(new ParseJSONResponse())
+      .pipe(through2.obj(function (msg, enc, cb) {
+        var obj;
+        if (msg['stream']) {
+          _this.emit('info', {
+            info: msg['stream'].trimRight()
+          });
+          if (msg['progress'] || msg['progressDetail']) {
+            _this.emit('progress', {
+              id: msg['id'],
+              progress: msg['progress'],
+              progressDetail: msg['progressDetail']
+            });
+          }
+          cb();
+        } else if (msg['error'] || msg['errorDetail']) {
+          var err = new Error(msg['error']);
+          Error.captureStackTrace(this, Error);
+          err.errorDetail = msg['errorDetail'];
+          err.code = 'BUILDERROR';
+          _this.emit('error', err);
+          cb(err);
+        } else {
+          console.error('Uncaught response --> ', msg);
+        }
+      }))
+      .on('finish', resolve)
+      .on('error', reject);
+  });
+};
+
 Server.prototype.getContainers = function () {
   return Bluebird.bind(this)
     .then(function () {
@@ -121,90 +216,6 @@ Server.prototype.status = function () {
     .then(function () { return this.getConfig('meta'); })
     .then(function () { return this.getImages(); })
     .then(function () { return this.getContainers(); });
-};
-
-Server.prototype._makeTmpDir = function () {
-  return fs.mkdirAsync('./.tmp-ssd').error(function (err) {
-    if (err && err.cause.code !== 'EEXIST') {
-      throw err;
-    }
-  });
-};
-
-Server.prototype.build = function (opts) {
-  return Bluebird.bind(this)
-    .then(function () {
-      return Bluebird.join(this.getConfig('meta'), this.getDocker(), this._makeTmpDir());
-    })
-    .then(function () { return makeTar('./source', './.tmp-ssd'); })
-    .then(function (tarPath) {
-      return this.docker.buildImageAsync(tarPath, {
-        t: this.meta['repo'] + ':' + this.meta['version'],
-        nocache: !opts.cache
-      });
-    });
-};
-
-/**
- * Dedicated to consume response stream returned by `docker.buildImage`
- *   messages will be emitted on Server instance.
- * @param  {Stream} response
- * @return {Bluebird}
- */
-Server.prototype._handleBuildResponse = function (response) {
-  var _this = this;
-  return new Bluebird(function (resolve, reject) {
-    response.setTimeout(60000);
-    var logging = response.pipe(new ParseJSONResponse())
-      .pipe(through2.obj(function (msg, enc, cb) {
-        var obj;
-        if (msg['stream']) {
-          _this.emit('info', {
-            info: msg['stream'].trimRight()
-          });
-          if (msg['progress'] || msg['progressDetail']) {
-            _this.emit('progress', {
-              id: msg['id'],
-              progress: msg['progress'],
-              progressDetail: msg['progressDetail']
-            });
-          }
-          cb();
-        } else if (msg['error'] || msg['errorDetail']) {
-          var err = new Error(msg['error']);
-          Error.captureStackTrace(this, Error);
-          err.errorDetail = msg['errorDetail'];
-          err.code = 'BUILDERROR';
-          _this.emit('error', err);
-          cb(err);
-        } else {
-          console.error('Uncaught response --> ', msg);
-        }
-      }))
-      .on('finish', resolve)
-      .on('error', reject);
-  });
-};
-
-Server.prototype._getImage = function (opts) {
-  return Bluebird.bind(this)
-    .then(function () { _check.call(this, 'docker', 'meta'); })
-    .then(function () { return this.getImages(); })
-    .then(function () {
-      if (this.images.length === 0 ||
-          semver.gt(this.meta.version, this.images[0].version)) {
-        return this.build(opts);
-      } else {
-        throw this.images[0];
-      }
-    })
-    .then(function (response) { return this._handleBuildResponse(response); })
-    .then(function () { return this.getImages(); })
-    .then(function () { throw this.images[0]; })
-    .catch(
-      function isImage(obj) { return obj.Id !== undefined; },
-      function (image) { this.image = image; }
-    );
 };
 
 Server.prototype._getContainer = function () {

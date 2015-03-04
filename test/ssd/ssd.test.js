@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var proxyquire = require('proxyquire').noPreserveCache().noCallThru();
 var Bluebird = require('bluebird');
-var fs = require('../lib/fs-promisified.js');
+var fs = require('../../lib/fs-promisified.js');
 
 var fixture_images = require('./fixture/get-images-images.json');
 
