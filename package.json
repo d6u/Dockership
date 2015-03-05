@@ -14,7 +14,7 @@
   },
   "author": "Daiwei Lu <daiweilu123@gmail.com> (http://daiwei.lu)",
   "license": "MIT",
-  "main": "index.js",
+  "main": "lib/index.js",
   "bin": {
     "ssd": "./bin/ssd.js"
   },
