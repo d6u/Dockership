@@ -1,6 +1,4 @@
 .DS_Store
 *.log
-node_modules
-.tmp-ssd
-.tmp-test
-coverage
+/node_modules
+/coverage

@@ -1,10 +1,9 @@
 {
   "name": "ssd",
-  "version": "0.0.6",
-  "description": "Simple Server Deployment",
+  "version": "1.0.0",
+  "description": "Simple Server Docker",
   "keywords": [
     "docker",
-    "docker.io",
     "deploy"
   ],
   "homepage": "https://github.com/daiweilu/ssd",
@@ -14,31 +13,25 @@
   },
   "author": "Daiwei Lu <daiweilu123@gmail.com> (http://daiwei.lu)",
   "license": "MIT",
-  "main": "index.js",
-  "bin": {
-    "ssd": "./bin/ssd.js"
-  },
+  "main": "lib/index.js",
   "scripts": {
     "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R nyan --recursive"
   },
   "dependencies": {
-    "archiver": "^0.12.0",
-    "async": "^0.9.0",
-    "bluebird": "^2.3.11",
-    "chalk": "^0.5.1",
-    "dateformat": "^1.0.8",
-    "dockerode": "^2.0.4",
-    "lodash": "^2.4.1",
-    "minimist": "^1.1.0",
-    "semver": "^4.1.0",
-    "through2": "^0.6.3"
+    "archiver": "0.14.3",
+    "bluebird": "2.9.13",
+    "dockerode": "2.0.7",
+    "lodash": "3.3.1",
+    "semver": "4.3.1",
+    "through2": "0.6.3"
   },
   "devDependencies": {
-    "chai": "^1.10.0",
-    "istanbul": "^0.3.4",
-    "mocha": "^2.0.1",
-    "proxyquire": "^1.1.0",
-    "sinon": "^1.12.1",
-    "split": "^0.3.2"
+    "chai": ">=1.10.0",
+    "eslint": "^0.15.1",
+    "istanbul": ">=0.3.4",
+    "mocha": ">=2.0.1",
+    "proxyquire": ">=1.1.0",
+    "sinon": ">=1.12.1",
+    "split": ">=0.3.2"
   }
 }

@@ -1,6 +1,0 @@
-{
-  "connection": "https://your.docker.host:2376",
-  "ca": "/path/to/your/keys/ca.pem",
-  "cert": "/path/to/your/keys/cert.pem",
-  "key": "/path/to/your/keys/key.pem"
-}
