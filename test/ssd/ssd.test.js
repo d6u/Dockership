@@ -23,7 +23,7 @@ describe('Server', function () {
       var error;
       try {
         new Server({
-          // dockerfileContext: '',
+          // buildContext: '',
           docker: {},
           meta: {}
         });
@@ -31,7 +31,7 @@ describe('Server', function () {
         error = err;
       }
       expect(error).not.undefined;
-      expect(error.message).equal('"opts.dockerfileContext" is required but not defined');
+      expect(error.message).equal('"opts.buildContext" is required but not defined');
       expect(dockerSpy.callCount).equal(0);
     });
   });
@@ -55,7 +55,7 @@ describe('Server', function () {
 
     it('should return a list of sorted images of target repo with tag, repo, version properties', function (done) {
       var s = new Server({
-        dockerfileContext: '',
+        buildContext: '',
         docker: {},
         meta: {
           repo: 'someone/baseimage'
@@ -100,7 +100,7 @@ describe('Server', function () {
 
     it('should emit warning if detected image with multiple RepoTag', function (done) {
       var s = new Server({
-        dockerfileContext: '',
+        buildContext: '',
         docker: {},
         meta: {
           repo: 'someone/baseimage'

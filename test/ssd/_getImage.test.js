@@ -23,7 +23,7 @@ describe('Server', function () {
         fs.readFileAsync('/Users/daiwei/.boot2docker/certs/boot2docker-vm/key.pem'),
         function (ca, cert, key) {
           var s = new Server({
-            dockerfileContext: 'examples/node-hello/source',
+            buildContext: 'examples/node-hello/source',
             docker: {
               host: '192.168.59.103',
               port: 2376,
