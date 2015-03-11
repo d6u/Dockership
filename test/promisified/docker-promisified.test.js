@@ -1,8 +1,10 @@
+'use strict';
+
 var expect = require('chai').expect;
 var proxyquire = require('proxyquire').noPreserveCache().noCallThru();
 var sinon = require('sinon');
 
-var Promise = require('bluebird');
+var Bluebird = require('bluebird');
 
 describe('dockerPromisified', function () {
 
@@ -24,21 +26,21 @@ describe('dockerPromisified', function () {
       return new FakeContainer();
     };
 
-    var spy = sandbox.spy(Promise, 'promisifyAll');
+    var spy = sandbox.spy(Bluebird, 'promisifyAll');
 
-    var Docker = proxyquire('../lib/docker-promisified', {
-      'bluebird':  Promise,
+    var Docker = proxyquire('../../lib/promisified/docker-promisified', {
+      'bluebird': Bluebird,
       'dockerode': FakeDocker
     });
 
     var d = new Docker();
-    expect(d.getContainerAsync).not.undefined;
+    expect(d.getContainerAsync).not.equal(undefined);
 
     var c = d.getContainer();
-    expect(c.startAsync).not.undefined;
+    expect(c.startAsync).not.equal(undefined);
 
     expect(spy.callCount).eql(2);
-    d.getContainer()
+    d.getContainer();
     expect(spy.callCount).eql(2);
   });
 });
