@@ -37,6 +37,12 @@ Bluebird.join(
         console.log('container', container);
       }, function (err) {
         console.error('err', err.stack);
+      })
+      .then(function () {
+        return this.stop();
+      })
+      .then(function () {
+        console.log('stopped');
       });
   }
 );
