@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
 
-var parseMeta  = require('../lib/parse-meta');
+var parseMeta  = require('../../lib/util/parse-meta');
 
 describe('parseMeta', function () {
 

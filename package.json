@@ -1,25 +1,26 @@
 {
-  "name": "ssd",
+  "name": "dockership",
   "version": "1.0.2",
-  "description": "Simple Server Docker",
+  "description": "Scriptable docker management tool build upon Docker remote API.",
   "keywords": [
-    "docker",
-    "deploy"
+    "docker"
   ],
-  "homepage": "https://github.com/daiweilu/ssd",
+  "homepage": "https://github.com/daiweilu/Dockership",
   "repository": {
     "type": "git",
-    "url": "https://github.com/daiweilu/ssd.git"
+    "url": "https://github.com/daiweilu/Dockership.git"
   },
   "author": "Daiwei Lu <daiweilu123@gmail.com> (http://daiwei.lu)",
   "license": "MIT",
   "main": "lib/index.js",
   "scripts": {
-    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R nyan --recursive"
+    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R nyan --recursive",
+    "eslint": "eslint lib/**.js"
   },
   "dependencies": {
     "archiver": "0.14.3",
     "bluebird": "2.9.13",
+    "charm": "1.0.0",
     "dockerode": "2.0.7",
     "lodash": "3.3.1",
     "semver": "4.3.1",
