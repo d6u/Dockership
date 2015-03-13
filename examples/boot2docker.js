@@ -31,11 +31,12 @@ Bluebird.join(
     ship
       .build()
       .then(function (image) {
-        console.log('build', image);
+        return this.start();
       })
-      .catch(function (err) {
-        console.error(err);
-        console.error(err.stack);
+      .then(function (container) {
+        console.log('container', container);
+      }, function (err) {
+        console.error('err', err.stack);
       });
   }
 );
