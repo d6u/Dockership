@@ -9,11 +9,21 @@ Scriptable docker management tool build upon Docker remote API.
 ```javascript
 var Dockership = require('dockership');
 
+var dockerConfig = {
+  ca:   'path/to/ca', // Can also be a Buffer of ca.pem
+  cert: 'path/to/cert',
+  key:  'path/to/key',
+  host: '0.0.0.0',
+  port: 2376
+};
+
 var ship = new Dockership({
   docker: dockerConfig, // Config obj used to construct docker remote client
   buildContext: 'path/to/dockerfile/parent/dir', // Absolute, or relative to cwd
-  meta: metaConfig // Infor describing docker images and how to run containers
+  meta: metaConfig // Information describing docker images and how to run containers
 });
+
+ship.docker // A instance of Dockerode
 ```
 
 ### 2. API
@@ -114,6 +124,4 @@ ship
 
 ## TODO
 
-- Support multiple images and containers
-- Support dependencies/link among containers
 - Improve event emitting
