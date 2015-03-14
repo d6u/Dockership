@@ -1,6 +1,6 @@
 {
   "name": "dockership",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Scriptable docker management tool build upon Docker remote API.",
   "keywords": [
     "docker"
