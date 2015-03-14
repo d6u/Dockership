@@ -22,8 +22,6 @@ var ship = new Dockership({
   buildContext: 'path/to/dockerfile/parent/dir', // Absolute, or relative to cwd
   meta: metaConfig // Information describing docker images and how to run containers
 });
-
-ship.docker // A instance of Dockerode
 ```
 
 ### 2. API
@@ -59,22 +57,26 @@ ship.build().then(function (image) {
 `ship` instance is an EventEmitter instance. You can listen to events emitted during build process.
 
 ```javascript
-ship
-  .on('info', function (msg) {
-    // JSON
-  })
-  .on('progress', function (msg) {
+ship.on('buildMessage', function (obj) {
+  // Log something
+});
+```
 
-  })
-  .on('error', function (msg) {
+Dockership comes with logger helper to help log `buildMessage` to console.
 
-  })
-  .on('end', function () {
-    // No message
-  })
-  .on('UncaughtResponse', function (msg) {
+```javascript
+var logger = Dockership.makeLogger();
+ship.on('buildMessage', logger);
+```
 
-  });
+`logger` can be customized by passing a modifier function:
+
+```javascript
+var logger = Dockership.makeLogger(function (str) {
+  return 'Prefix ' + str;
+});
+
+ship.on('buildMessage', logger); // Prepend "Prefix " to every line of message
 ```
 
 #### `start` method
@@ -85,7 +87,7 @@ ship.start().then(function (container) {
 });
 ```
 
-By default, `start` will start with image or stop container specified in `metaConfig`. If such image or stop container cannot be found, `start` will reject.
+By default, `start` will start stopped container or create container from image specified in `metaConfig`. If such container or image cannot be found, `start` will reject.
 
 #### `stop` method
 
@@ -124,4 +126,4 @@ ship
 
 ## TODO
 
-- Improve event emitting
+- Improve event emitting, especially error emitting.
