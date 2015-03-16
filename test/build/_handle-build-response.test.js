@@ -31,17 +31,27 @@ function createResponse(fileName) {
 }
 
 describe('_handleBuildResponse()', function () {
-  var _handleBuildResponse, ee;
+  var _handleBuildResponse, ee, emitEnd;
 
   beforeEach(function () {
+    emitEnd = false;
+    ee = new EventEmitter();
+    ee.on('buildMessage', function (msg) {
+      if (msg === 'end') {
+        emitEnd = true;
+      }
+    });
     _handleBuildResponse = proxyquire('../../lib/build/_handle-build-response', {})
-      .bind(new EventEmitter());
+      .bind(ee);
   });
 
   it('should end', function (done) {
     createResponse('docker-response.txt')
       .then(function (response) {
-        _handleBuildResponse(response);
+        return _handleBuildResponse(response);
+      })
+      .then(function () {
+        expect(emitEnd).equal(true);
       })
       .then(done, done);
   });
@@ -55,6 +65,7 @@ describe('_handleBuildResponse()', function () {
       })
       .catch(Error, function (err) {
         expect(err.message).equal('random error');
+        expect(emitEnd).equal(true);
       })
       .then(done, done);
 
@@ -72,6 +83,7 @@ describe('_handleBuildResponse()', function () {
       })
       .catch(SyntaxError, function (err) {
         expect(err.message).contains('Unexpected token');
+        expect(emitEnd).equal(true);
       })
       .then(done, done);
   });
@@ -87,6 +99,7 @@ describe('_handleBuildResponse()', function () {
       .catch(BuildError, function (err) {
         expect(err.message).equal('runit-app.sh: no such file or directory');
         expect(err.details).equal('runit-app.sh: no such file or directory');
+        expect(emitEnd).equal(true);
       })
       .then(done, done);
   });
