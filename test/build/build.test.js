@@ -6,7 +6,7 @@ var sinon = require('sinon');
 
 var Bluebird = require('bluebird');
 
-var mockImages = require('./fixture/build.json');
+var mockImages = require('../fixture/build.json');
 
 describe('build()', function () {
 
