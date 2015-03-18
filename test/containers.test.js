@@ -12,9 +12,11 @@ describe('containers()', function () {
 
   it('should resolve with qualified containers', function (done) {
     Dockership = proxyquire('../lib/index', {
-      './promisified/docker-promisified': function () {
-        this.listContainersAsync = function () {
-          return Bluebird.resolve(mockContainers);
+      './util/make-docker': function () {
+        return {
+          listContainersAsync: function () {
+            return Bluebird.resolve(mockContainers);
+          }
         };
       }
     });

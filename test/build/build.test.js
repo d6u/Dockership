@@ -14,7 +14,7 @@ describe('build()', function () {
 
   beforeEach(function () {
     _handleBuildResponseSpy = sinon.spy();
-    buildFactory = proxyquire('../lib/build/index.js', {
+    buildFactory = proxyquire('../../lib/build/index.js', {
       './_make-tar': function () {},
       './_handle-build-response': _handleBuildResponseSpy
     });

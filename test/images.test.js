@@ -12,9 +12,11 @@ describe('images()', function () {
 
   it('should resolve with qualified images', function (done) {
     Dockership = proxyquire('../lib/index', {
-      './promisified/docker-promisified': function () {
-        this.listImagesAsync = function () {
-          return Bluebird.resolve(mockImages);
+      './util/make-docker': function () {
+        return {
+          listImagesAsync: function () {
+            return Bluebird.resolve(mockImages);
+          }
         };
       }
     });
