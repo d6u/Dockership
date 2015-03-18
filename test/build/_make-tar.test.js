@@ -10,7 +10,7 @@ describe('_makeTar()', function () {
   var _makeTar;
 
   it('should resolve with a buffer of all tar content', function (done) {
-    _makeTar = proxyquire('../lib/build/_make-tar', {
+    _makeTar = proxyquire('../../lib/build/_make-tar', {
       'archiver': function () {
         var ee = new EventEmitter();
         ee.bulk = function () {};

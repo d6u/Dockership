@@ -6,7 +6,7 @@ var sinon = require('sinon');
 
 var Bluebird = require('bluebird');
 
-var mockImages = require('./fixture/build.json');
+var mockImages = require('../fixture/build.json');
 
 describe('build()', function () {
 
@@ -14,7 +14,7 @@ describe('build()', function () {
 
   beforeEach(function () {
     _handleBuildResponseSpy = sinon.spy();
-    buildFactory = proxyquire('../lib/build/index.js', {
+    buildFactory = proxyquire('../../lib/build/index.js', {
       './_make-tar': function () {},
       './_handle-build-response': _handleBuildResponseSpy
     });
